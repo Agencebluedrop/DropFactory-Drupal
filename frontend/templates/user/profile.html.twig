@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+{% block hero %}
+    <twig:Molecules:Hero label="Mon Compte" />
+{% endblock %}
+{% block body %}
+    {% set formContentArray = [] %}
+    {% set formContent %}
+        <twig:Molecules:FormContainer formTitle="Profile information">
+            <div class="space-y-4 lg:space-y-6">
+                <twig:Atoms:FormElement inputType="email" inputId="username" label="My email :" value="{{ app.user.email }}" name="email" additionalAttributes="disabled" />
+                <twig:Atoms:Button label="Logout" url="{{path('app_logout')}}" variant="outline" icon="logout" btnIconColor="icon-path:fill-brand-primary" />
+            </div>
+        </twig:Molecules:FormContainer>
+    {% endset %}
+    {% set formContentArray = formContentArray|merge([formContent]) %}
+    <twig:Utils:Section :gridItems="formContentArray" columns="1" columnsWidth="8" />
+{% endblock %}

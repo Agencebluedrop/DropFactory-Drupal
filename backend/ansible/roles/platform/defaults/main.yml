@@ -1,0 +1,7 @@
+---
+
+# The UNIX account that will contain the platform
+dropfactory_platform_unix_user: ''
+
+dropfactory_platform_git_url: ''
+dropfactory_platform_git_branch: ''

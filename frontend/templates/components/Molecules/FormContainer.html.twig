@@ -1,0 +1,5 @@
+{% set formClasses = 'p-10 lg:p-20 bg-white rounded-3xl space-y-6 shadow-custom' %}
+<div{{ attributes.defaults({class: formClasses}) }}>
+   <twig:Atoms:RichText headline="{{ formTitle }}" headlineTag="h2" headingClasses="h3" />
+    {% block content %}{% endblock %}
+</div>

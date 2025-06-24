@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Sauvegardes" />
+{% endblock %}
+{% block body %}
+    {% set gridItemsArray = [] %}
+    {% set leftcontent %}
+        <twig:Atoms:RichText headline="Salariés des TPE" headlineTag="h2" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat" />
+    {% endset %}
+    {% set rightContent %}
+        <div class="flex flex-col items-end gap-4 [&>a]:w-full">
+            <twig:Atoms:Button label="info" icon="info-icon" buttonIcon="true" iconSize="large" />
+            <twig:Atoms:ButtonExternal label="https://cgt-tpe.fr/" url="https://cgt-tpe.fr/" />
+            <twig:Atoms:Button label="Se connecter" variant="outline" icon="arrow-right" url="https://cgt-tpe.fr/" iconSize="medium" />
+        </div>
+    {% endset %}
+    {% set gridItemsArray = gridItemsArray|merge([leftcontent, rightContent]) %}
+    <twig:Utils:Section :gridItems="gridItemsArray" columns="2" columnsWidth="8x4" containerClasses="bg-brand-tertiary" />
+    <twig:Utils:Section :withGrid="false">
+        <div class="space-y-10">
+            <twig:Atoms:RichText headline="7 sauvegardes" headlineTag="h3" />
+            {% set tablesCells = [
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+                ['24/08/24', '14:32'],
+            ] %}
+       
+            <twig:Atoms:Table :tableCells="tablesCells" />
+        </div>
+    </twig:Utils:Section>
+    <twig:Molecules:LaunchTask />
+{% endblock %}

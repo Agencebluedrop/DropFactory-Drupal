@@ -1,0 +1,28 @@
+{% set gridOptions = {
+    1: {
+        'equal':'col-span-12',
+        '10':'col-span-12 lg:col-start-2 lg:col-end-12',
+        '8': 'col-span-12 lg:col-start-3 lg:col-end-11',
+        '6': 'col-span-12 lg:col-start-4 lg:col-end-10'
+    },
+    2: {
+        'equal': 'col-span-12 md:col-span-6',
+        '8x4': 'col-span-12 lg:odd:col-span-8 lg:even:col-span-4'
+    },
+    3: {
+        'equal': 'col-span-12 md:col-span-6 lg:col-span-4',
+    },
+    4: {
+        'equal': 'col-span-12 md:col-span-6 lg:col-span-3',
+    }
+} %}
+
+{% set columnClass = gridOptions[columns][columnsWidth] ?? '' %}
+
+<div{{ attributes.defaults({class: 'grid grid-cols-12 gap-8'}) }}>
+    {% for item in items %}
+        <div class="{{ columnClass }}">
+            {{ item }}
+        </div>
+    {% endfor %}
+</div>

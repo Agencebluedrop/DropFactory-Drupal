@@ -1,0 +1,23 @@
+---
+
+
+- name: Clone a repo with separate git directory
+  ansible.builtin.git:
+    repo: "{{ dropfactory_platform_git_url }}"
+    version: "{{ dropfactory_platform_git_branch }}"
+    dest: "~{{ dropfactory_platform_unix_user }}/platform/"
+    key_file: "~{{ dropfactory_platform_unix_user }}/.ssh/id_ed25519"
+    accept_newhostkey: true
+    clone: true
+    update: true
+    umask: '0027'
+  become: true
+  become_user: "{{ dropfactory_platform_unix_user }}"
+
+- name: Initiate empty site.php to enable multi-sites behaviour
+  ansible.builtin.file:
+    path: "~{{ dropfactory_platform_unix_user }}/platform/web/sites/sites.php"
+    state: touch
+    mode: '0640'
+  become: true
+  become_user: "{{ dropfactory_platform_unix_user }}"

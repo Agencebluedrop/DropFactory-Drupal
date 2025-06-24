@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Site{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body_classes %} bg-brand-tertiary{% endblock %}
+
+{% block body %}
+    {% set formContentArray = [] %}
+
+    {% set formContent %}
+        <div class="space-y-10">
+            <twig:Atoms:Button label="back" :buttonIcon="true" url="{{path('app_sites')}}" icon="arrow-back" rounded="true" />
+
+            <twig:Molecules:FormContainer formTitle="Déployer un nouveau site">
+                {# {{ form(form) }} #}
+                {{ form_start(form, { attr: { id: 'site_add_form' } }) }}
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.domain) }} 
+                    {# {{ form_row(form.aliases) }} #}
+                    <label for="aliases" class="block text-brand-secondary text-xs uppercase font-bold mb-2 mt-6"> Aliases</label>
+                    <div class="tag-input-container px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full flex flex-wrap gap-2">
+                        <input id="aliases" type="text" class="tag-input border-0 outline-none flex-1" placeholder="Add a tag and press Enter">
+                        <div id="tags" class="flex items-center gap-2 flex-wrap"></div>
+                    </div>
+                    {{ form_row(form.platform) }}
+                    {{ form_row(form.language) }}
+                    {{ form_row(form.install_profile) }}
+                {{ form_end(form) }}
+            </twig:Molecules:FormContainer>
+        </div>
+    {% endset %}
+
+    {% set formContentArray = formContentArray|merge([formContent]) %}
+
+    <twig:Utils:Section :withGrid="false">
+        <div class="flex justify-center mb-10">
+            <twig:Atoms:Logo logo="logo-vertical" url="{{ path('app_homepage') }}" classes="h-[92px] w-auto" />
+        </div>
+
+        <twig:Utils:Grid :items="formContentArray" columns='1' columnsWidth="8" />
+    </twig:Utils:Section>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block js_bottom %}
+    <script>
+        const container = document.querySelector('.tag-input-container');
+        const tagsContainer = document.getElementById('tags');
+        const input = document.querySelector('.tag-input');
+
+        function createTag(text) {
+        const tag = document.createElement('div');
+        tag.classList.add('tag');
+
+        const span = document.createElement('span');
+        span.textContent = text;
+
+        const button = document.createElement('button');
+        button.textContent = 'x';
+        button.onclick = () => tag.remove();
+
+        tag.appendChild(span);
+        tag.appendChild(button);
+
+        tagsContainer.appendChild(tag);
+        }
+
+        input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim() !== '') {
+            createTag(input.value.trim());
+            input.value = '';
+            e.preventDefault(); 
+        }
+        });
+            const form = document.getElementById('site_add_form');
+            const form_select_platform = document.getElementById('site_platform');
+            const form_select_install_profile = document.getElementById('site_install_profile');
+
+            const updateForm = async (data, url, method) => {
+                const req = await fetch(url, {
+                    method: method,
+                    body: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        charset: 'utf-8'
+                    }
+                });
+
+                const text = await req.text();
+                return text;
+            };
+
+        const parseTextToHtml = (text) => {
+            const parser = new DOMParser();
+            return parser.parseFromString(text, 'text/html');
+        };
+
+        const changeOptions = async (e) => {
+            const requestBody = e.target.getAttribute('name') + '=' + e.target.value;
+
+            const updateFormResponse = await updateForm(requestBody, form.getAttribute('action'), form.getAttribute('method'));
+            const html = parseTextToHtml(updateFormResponse);
+
+            const new_form_select_install_profile = html.getElementById('site_install_profile');
+
+            if (window.choicesInstances.has(form_select_install_profile)) {
+                window.choicesInstances.get(form_select_install_profile).destroy();
+                window.choicesInstances.delete(form_select_install_profile);
+            }
+
+            form_select_install_profile.innerHTML = new_form_select_install_profile.innerHTML;
+
+            const newChoices = new Choices(form_select_install_profile, {
+                searchEnabled: false,
+                searchChoices: false,
+                shouldSort: false,
+                itemSelectText: '',
+            });
+
+            window.choicesInstances.set(form_select_install_profile, newChoices);
+        };
+        form_select_platform.addEventListener('change', (e) => changeOptions(e));
+    </script>
+{% endblock %}

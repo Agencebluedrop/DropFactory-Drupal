@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tâches{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Tâches" />
+{% endblock %}
+
+{% block body %}
+    <twig:Utils:Section :withGrid="false">
+        <div class="space-y-10">
+            <twig:Atoms:RichText headline="{{ tablesCells|length }} tâches" headlineTag="h3" />
+
+            <twig:Atoms:Table :tableCells="tablesCells" :withTasks="false" :withCheckbox="false" />
+        </div>
+    </twig:Utils:Section>
+{% endblock %}

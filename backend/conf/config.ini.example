@@ -1,0 +1,16 @@
+[database]
+; Mail database settings for the backend
+; The backend only needs one database, with full access over it
+;
+; (reminder) the frontend will have a different user with only 
+;read access, except on the TaskBuffer table to add new tasks on the queue
+
+type     = mysql
+host     = localhost
+user     = db_user 
+password = PASSWORD
+database = db_name
+
+; This is not used and here as an example
+[storage]
+basedir = /path/to/foo

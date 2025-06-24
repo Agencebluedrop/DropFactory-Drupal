@@ -1,0 +1,9 @@
+<div{{ attributes.defaults({class: 'tw-content lg:tw-content-lg space-y-6'}) }}>
+    {% if headline %}
+        <{{headlineTag}} class="{{headingClasses}}"> {{ headline }} </{{headlineTag}}>
+    {% endif %}
+    {% if text %}
+        <div class="{{ textClasses }}"> {{ text|raw }} </div>
+    {% endif %}
+    
+</div>

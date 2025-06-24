@@ -1,0 +1,10 @@
+{% set classes = [
+    'inline-flex items-center justify-center gap-2 pb-2 header:px-6 header:py-4 lg:header:px-0 lg:header:pt-0 lg:header:pb-2 text-sm md:text-base md:footer:text-sm font-bold header:text-brand-secondary lg:header:!text-white text-white',
+    active or underline ? 'bg-gradient-to-r from-white to-white bg-[length:100%_2px] bg-no-repeat bg-right-bottom lg:header:bg-gradient-to-r header:bg-none header:!text-brand-primary' : '',
+    linkClasses
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+
+<a{{ attributes.defaults({class: classesString}) }} href="{{ url }}">
+    {{ label }}
+</a>

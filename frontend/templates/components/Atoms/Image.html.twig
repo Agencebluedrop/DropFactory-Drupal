@@ -1,0 +1,10 @@
+{% set classes = [
+    'image-container w-full relative',
+    withmask ? "before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-black/20",
+    imageClasses
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+
+<div{{ attributes.defaults({class: classesString}) }}>
+     <img src="{{ asset('images/sites/' ~ image) }}" alt="{{ alt }}" class="w-full h-full object-cover">
+</div>

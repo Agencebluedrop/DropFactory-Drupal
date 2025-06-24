@@ -1,0 +1,29 @@
+##
+# ansible-playbook -i inventory site_add.yml
+---
+- name: Add a new site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+
+  vars_files:
+    - vars/main.yml
+
+  # pre_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} pre-run playbook.yml playbook"
+
+  roles:
+    - create_database
+    - nginx_vhost
+    - site
+
+  # post_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} post-run playbook.yml playbook"

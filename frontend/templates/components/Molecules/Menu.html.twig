@@ -1,0 +1,12 @@
+{% set classes = [
+    "inline-flex items-center justify-start gap-6 lg:header:gap-6 header:gap-0 flex-wrap",
+    variant == 'headerNav' ? 'lg:flex-row flex-col' : ''
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+<ul {{ attributes.defaults({class: classesString}) }}>
+    {% for menu in menuItems %}
+        <li class="header:w-full lg:header:w-auto">
+            <twig:Atoms:Link label="{{menu.label}}" url="{{menu.url}}" active="{{ menu.url == app.request.pathinfo }}" underline="{{ withUnderline }}" /> 
+        </li>
+    {% endfor %}
+</ul>

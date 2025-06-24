@@ -1,0 +1,60 @@
+<div{{ attributes.defaults({class: 'toggle-list relative'}) }} x-data="{open:false, tabbing: true,
+      handleFocus(){ 
+        if(this.tabbing == true){ 
+          let options = $el.closest('.toggle-list').getElementsByClassName('list-item'); 
+          for(let i = 0;i<options.length;i++){ 
+            options[i].querySelector('button').setAttribute('tabindex', '-1') 
+          } 
+        } 
+      },
+    }">
+      <div x-data="{
+      handleFocusOut(){
+        let thisList = $el;
+        if (!thisList.contains(event.relatedTarget)){
+          open=false;
+          if(tabbing == true){ 
+            let options = $el.closest('.toggle-list').getElementsByClassName('list-item'); 
+            for(let i = 0;i<options.length;i++){ 
+              options[i].querySelector('button').setAttribute('tabindex', '-1') 
+            } 
+          } 
+        }
+      }
+    }
+  "
+  >
+    <button
+         @resize.window="let thisList = $el.closest('.toggle-list'); if(window.innerWidth >= 1024){if(thisList){ thisList.addEventListener('focusout', handleFocusOut);}}else{thisList.removeEventListener('focusout', handleFocusOut);}" 
+        @click="open = ! open;"
+        :aria-expanded="open"
+        x-init="let thisList = $el.closest('.toggle-list'); if(window.innerWidth >= 1024){if(thisList){ thisList.addEventListener('focusout', handleFocusOut);}}else{thisList.removeEventListener('focusout', handleFocusOut);} $el.addEventListener('focusin', (event) => {handleFocus() })"
+        class="toggle-button flex items-center justify-center w-full relative z-10 gap-2"
+    >
+        <span class="button-text 
+        whitespace-nowrap overflow-hidden text-base font-bold text-brand-primary">{{label}}</span>
+        <div class="transition" :class="{'-rotate-180' : open }">
+            <twig:Atoms:Icon icon="arrow-down" size="small" />
+        </div>
+    </button>
+
+    <template x-if="true">
+        <div
+            :class="open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-0'"
+            class="transition-all shadow-custom duration-150 min-w-full w-full lg:w-[300px] fixed lg:absolute overflow-hidden mt-1 bg-white rounded-3xl z-30 right-0"
+        >
+            <ul class="py-2 max-h-[260px] overflow-auto bg-white">
+                {% for item in listItems %}
+                  {% set buttonTag = item.url is defined and item.url is not empty ? 'a' : 'button' %}
+                    <li class="px-4 py-3 hover:bg-neutral-50 transition list-item">
+                        <{{buttonTag}} {% if item.url is defined and item.url is not empty %} href="{{ item.url }}" {% endif %}>
+                            <twig:Atoms:LabelIcon label="{{ item.label }}"  icon="{{ item.icon }}" />
+                        </{{buttonTag}}>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </template>
+     </div>
+</div>
+

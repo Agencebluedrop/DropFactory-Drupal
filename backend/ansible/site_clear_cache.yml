@@ -1,0 +1,30 @@
+##
+# ansible-playbook -i site_clear_cache.yml
+---
+- name: Clear cache a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+
+  vars_files:
+    - vars/main.yml
+
+  # pre_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} pre-run playbook.yml playbook"
+
+  tasks:
+    - name: Clear cache a site
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: clear_cache.yml
+
+  # post_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} post-run playbook.yml playbook"

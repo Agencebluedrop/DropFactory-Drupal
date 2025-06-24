@@ -1,0 +1,72 @@
+{% use 'form_div_layout.html.twig' %}
+
+{%- block form_row -%}
+    {% set inputClasses = 'form-control px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full' %}
+    {% set labelClasses = 'block text-brand-secondary text-xs uppercase font-bold mb-2' %}
+    {# {% set errors = 'error-item:text-error error-item:text-xs error-item:uppercase error-item:font-bold [&>ul]:mb-2' %} #}
+    {%- set widget_attr = {} -%}
+    {% set row_attr = row_attr|merge({'class': (row_attr.class|default('') ~ ' bluedrop-row mt-6')|trim}) %}
+
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+   
+    {%- if 'choice' in form.vars.block_prefixes -%}
+        {% set classes = [
+            'choices-inner:pl-6 choices-inner:pr-12 choices-inner:!py-3 choices-inner:border-2 choices-inner:border-neutral-300 choices-inner:text-base choices-inner:bg-white choices-inner:text-brand-secondary choices-inner:leading-7 choices-inner:rounded-[48px]',
+            'choices-arrow:top-1/2 choices-arrow:-translate-y-1/2 choices-arrow:mt-0 choices-arrow:right-8 choices-arrow:w-3 choices-arrow:h-3 choices-arrow:block choices-arrow:border-0 choices-arrow:bg-no-repeat choices-arrow:bg-chevron-down choices-arrow:bg-center choices-arrow:right-6',
+            'choices-inner-single:!p-0 choices-inner-dropdown:rounded-3xl choices-inner-dropdown:border-2 choices-inner-dropdown:border-neutral-300 choices-inner-dropdown:mt-1',
+            'choices-items:px-6 choices-items:py-3 choices-items:text-brand-secondary choices-items:text-base choices-items:leading-7',
+            'choices-items-hovered:bg-neutral-50 choices-open-arrow:-rotate-180 choices-input:bg-white'
+        ] %}
+        {% set row_attr = row_attr|merge({'class': (row_attr.class|default('') ~ ' ' ~ classes|join(' '))|trim}) %}
+    {%- endif -%}
+
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form, null, {
+            label_attr: { class: labelClasses }
+        }) -}}
+        {{- form_errors(form) -}}
+        {{ form_widget(form, {
+            attr: widget_attr|merge({ class: inputClasses })
+        }) }}
+        {{- form_help(form) -}}
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_widget_simple -%}
+    {%- set type = type|default('text') -%}
+    {%- if type == 'range' or type == 'color' -%}
+        {# Attribute "required" is not supported #}
+        {%- set required = false -%}
+    {%- endif -%}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{%- endblock form_widget_simple -%}
+
+{%- block button_widget -%}
+    {%- if label is empty -%}
+        {%- if label_format is not empty -%}
+            {% set label = label_format|replace({
+                '%name%': name,
+                '%id%': id,
+            }) %}
+        {%- elseif label is not same as(false) -%}
+            {% set label = name|humanize %}
+        {%- endif -%}
+    {%- endif -%}
+    <twig:Atoms:Button type="{{ type|default('button') }}" additionalAtt="{{ block('button_attributes')  }}" :buttonContent="true" icon="rocket" buttonClasses="mt-6 w-full">
+        {%- if translation_domain is same as(false) -%}
+            {%- if label_html is same as(false) -%}
+                {{- label -}}
+            {%- else -%}
+                {{- label|raw -}}
+            {%- endif -%}
+        {%- else -%}
+            {%- if label_html is same as(false) -%}
+                {{- label|trans(label_translation_parameters, translation_domain) -}}
+            {%- else -%}
+                {{- label|trans(label_translation_parameters, translation_domain)|raw -}}
+            {%- endif -%}
+        {%- endif -%}
+    </twig:Atoms:Button>
+{%- endblock button_widget -%}

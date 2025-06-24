@@ -1,0 +1,14 @@
+---
+
+- name: test
+  debug:
+    msg: "coucou"
+
+- name: test2
+  debug:
+    msg: "coucou"
+
+
+- name: variable
+  debug:
+    var: dropfactory_platform_name

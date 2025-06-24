@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sites{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Tous les sites" buttonUrl="{{path('app_new_site')}}" buttonText="Créer un site" />
+{% endblock %}
+
+{% block body %}
+    {% set selectArray = [
+        {'label' : 'Vider les caches', 'action_url': 'SITE_CLEAR_CACHE'},
+        {'label' : 'Run cron', 'action_url': 'SITE_RUN_CRON'},
+        {'label' : 'update database', 'action_url': 'SITE_DB_UPDATES'},
+    ] %}
+    <div x-data='{ itemsSelected: 0, selectOptions: {{ selectArray|json_encode|raw }}, selectedOption: { value: "SITE_CLEAR_CACHE" },
+        checkedIds: [], 
+        concatIds() {
+            return this.checkedIds.join("+");
+        },
+        selectUrl() {
+            return `/add_group_task/${this.selectedOption.value}/${this.concatIds()}`;
+        } 
+     }'>
+        <twig:Utils:Section :withGrid="false">
+            <div class="flex items-center justify-between gap-8">
+                {% set count = tablesCells|length ~ " sites" %}
+                <twig:Atoms:RichText headline="{{ count }}" headlineTag="h3" />
+
+                <div class="flex items-center gap-4">
+                    <div class="{% if viewMode != 'cards' %}opacity-50{% endif %}">
+                        <twig:Atoms:Button label="card view" icon="card" buttonIcon="true" url="{{ path('app_sites', { view: 'cards' }) }}" :rounded="true"  />
+                    </div>
+                    <div class="{% if viewMode != 'list' %}opacity-50{% endif %}">
+                        <twig:Atoms:Button label="list view" icon="list" buttonIcon="true" url="{{ path('app_sites', { view: 'list' }) }}" :rounded="true" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 md:mt-10">
+                {% if viewMode == 'list' %}
+                    <twig:Atoms:Table :tableCells="tablesCells" />
+                {% else %}
+
+                    {% set cardsArray = [] %}
+                    {% for item in cardsData %}
+                        {% set Card %}
+                            <twig:Molecules:Card
+                                label="{{ item.siteName }}"
+                                profile="Profil : {{ item.installProfile }}" 
+                                buttonExternaltext="{{ item.siteUrl }}"
+                                buttonExternalUrl="{{ item.siteUrl }}"
+                                buttonUrl="{{ item.siteUrl }}"
+                                isOnline="{{ item.online }}"
+                                image="{{ item.image }}"
+                                cardId="{{ loop.index }}" 
+                                alt="site image" 
+                                listTasks="{{ item.availableTasks }}"
+                            />
+                            {% endset %}
+                        {% set cardsArray = cardsArray | merge([Card]) %}
+                    {% endfor %}
+                    <div x-init="
+                        $el.addEventListener('checkbox-changed', event => {
+                            const checkboxId = event.target.id;
+                            if (event.detail.isChecked) {
+                                itemsSelected += 1;
+                                checkedIds.push(checkboxId);
+                            } else {
+                                itemsSelected -= 1;
+                                checkedIds = checkedIds.filter(id => id !== checkboxId);
+                            }
+                        });
+                    ">
+                        <twig:Utils:Grid :items="cardsArray" columns='3' />
+                    </div>
+                {% endif %}
+            </div>
+        </twig:Utils:Section>
+         <twig:Molecules:LaunchTask selectUrl="selectUrl()" :optionsArray="selectArray" />
+    </div>
+{% endblock %}

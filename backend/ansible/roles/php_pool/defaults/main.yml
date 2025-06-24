@@ -1,0 +1,8 @@
+---
+
+in_login: ''
+
+php_memory_limit: 256
+php_max_execution_time: 30
+php_post_max_size: 20
+php_upload_max_filesize: 20

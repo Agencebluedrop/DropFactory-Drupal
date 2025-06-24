@@ -1,0 +1,43 @@
+<div{{ attributes }}>
+    <div x-data="{ modelOpen: false }" class="h-full">
+    {% if toggleButton %}
+        {{ toggleButton|raw }}
+    {% endif %}
+
+    <template x-teleport="body">
+        <div x-show="modelOpen" class="modal fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" aria-modal="true">
+            <div class="layout flex items-end justify-center min-h-screen px-4 text-center md:items-center">
+                <div x-cloak @click="modelOpen = false;" x-show="modelOpen"
+                    x-transition:enter="transition ease-out duration-300 transform"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-200 transform"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 transition-opacity bg-brand-secondary/50" aria-hidden="true"
+                ></div>
+
+                <div x-cloak x-show="modelOpen"
+                    x-transition:enter="transition ease-out duration-300 transform"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="transition ease-in duration-200 transform"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="inline-block relative w-full p-10 md:p-20 my-20 overflow-hidden text-left transition-all rounded-[38px] transform bg-white shadow-xl max-w-[768px]">
+                        <div class="absolute right-8 top-8">
+                            <twig:Atoms:Button label="close modal" icon="close" :buttonIcon="true" iconSize="large" clickEvent="modelOpen = false;" />
+                        </div>
+                        <twig:Atoms:RichText :headline="modalTitle" headlineTag="h2" :text="modalText" />
+                        {% if withButtons %}
+                            <div class="flex items-center gap-4 mt-6 child:w-full">
+                                <twig:Atoms:Button label="Je confirme" icon="check" iconSize="medium" clickEvent="approveAction();" />
+                                <twig:Atoms:Button label="Annuler" icon="close" iconSize="medium" variant="outline" clickEvent="modelOpen = false;" />
+                            </div>
+                        {% endif %}
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+</div>

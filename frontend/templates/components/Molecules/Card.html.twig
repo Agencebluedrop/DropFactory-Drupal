@@ -1,0 +1,24 @@
+{% set classes = 'flex flex-col relative' %}
+<div{{ attributes.defaults({class: classes}) }} x-data="{ isChecked: false }">
+    <div class="card-content bg-white p-8 space-y-4 shadow-custom rounded-bl-3xl rounded-br-3xl relative border-t-0 border-2 border-transparent" :class="{'!border-brand-primary !bg-brand-tertiary' : isChecked }">
+        <twig:Atoms:RichText :headline="label" headlineTag="h3" headingClasses="h4" />
+        {# <div class="absolute top-6 right-6 !mt-0">
+            <twig:Atoms:Button label="info" icon="info-icon" buttonIcon="true" iconSize="large" />
+        </div> #}
+        <twig:Atoms:RichText :text="profile" textClasses="font-medium text-xs leading-5 text-cyan-800" />
+        <twig:Atoms:ButtonExternal :label="buttonExternaltext" :url="buttonExternalUrl" />
+        {# <twig:Atoms:Button label="Se connecter" variant="outline" icon="arrow-right" :url="buttonUrl" iconSize="medium" /> #}
+        <twig:Molecules:Dropdown :listItems="listTasks"/>
+    </div>
+    <div class="image-wrapper -order-1 rounded-tl-3xl rounded-tr-3xl overflow-hidden border-b-0 border-2 border-transparent" :class="{'!border-brand-primary' : isChecked }">
+        <div class="grid grid-cols-1 h-full">
+            <div class="row-span-full col-span-full z-10 flex items-start justify-between gap-2 px-6 py-4">
+                <twig:Atoms:Badge :online="isOnline" />
+                <twig:Atoms:Checkbox :checkboxId="cardId" changeEvent="$dispatch('checkbox-changed', { isChecked: isChecked })"/>
+            </div>
+            <div class="row-span-full col-span-full">
+                <twig:Atoms:Image :image="image" :alt="alt" imageClasses="h-[198px]" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+{% set classes = [
+    'container-wrapper relative px-6 w-full',
+    withPadding ? 'py-10 lg:py-20',
+    containerClasses
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+<div{{ attributes.defaults({class: classesString}) }}>
+    <div class="max-w-container mx-auto w-full">
+        {% if withGrid %}
+            <twig:Utils:Grid columns="{{ columns }}" columnsWidth="{{ columnsWidth }}" items="{{ gridItems }}" />
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
+    </div>
+</div>

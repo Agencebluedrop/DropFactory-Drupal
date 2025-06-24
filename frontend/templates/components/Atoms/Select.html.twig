@@ -1,0 +1,16 @@
+{% set classes = [
+    'choices-inner:pl-6 choices-inner:pr-12 choices-inner:!py-3 choices-inner:border-2 choices-inner:border-neutral-300 choices-inner:text-base choices-inner:bg-white choices-inner:text-brand-secondary choices-inner:leading-7 choices-inner:rounded-[48px]',
+    'choices-arrow:top-1/2 choices-arrow:-translate-y-1/2 choices-arrow:mt-0 choices-arrow:right-8 choices-arrow:w-3 choices-arrow:h-3 choices-arrow:block choices-arrow:border-0 choices-arrow:bg-no-repeat choices-arrow:bg-chevron-down choices-arrow:bg-center choices-arrow:right-6',
+    'choices-inner-single:!p-0 choices-inner-dropdown:rounded-3xl choices-inner-dropdown:border-2 choices-inner-dropdown:border-neutral-300 choices-inner-dropdown:mt-1',
+    'choices-items:px-6 choices-items:py-3 choices-items:text-brand-secondary choices-items:text-base choices-items:leading-7 choices:min-w-[200px]',
+    'choices-items-hovered:bg-neutral-50 choices-open-arrow:-rotate-180'
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+<div{{ attributes.defaults({class: classesString })}} >
+    <label class="sr-only" for="{{ selectId }}">Choose an option</label>
+    <select name="{{ selectId }}" id="{{ selectId }}" x-model="selectedOption">
+        {% for item in options %}
+            <option {% if item.action_url is defined %}  :value="'{{ item.action_url }}'" {% endif %}>{{ item.label }}</option>
+        {% endfor %}
+    </select>
+</div>

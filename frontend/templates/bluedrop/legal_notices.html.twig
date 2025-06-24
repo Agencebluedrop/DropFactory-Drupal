@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Legal Notices{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Mentions Légales" />
+{% endblock %}
+{% block body %}
+    <twig:Utils:Section :withGrid="false">
+        {% set text %}
+            <p>Ut nulla tempor non tempor cupidatat est adipisicing sunt ad aliquip labore eiusmod labore. Qui magna id consectetur labore reprehenderit id amet culpa est nisi culpa aute eu. Tempor occaecat ea qui in dolor nostrud irure qui fugiat ea non anim nostrud. Duis incididunt duis reprehenderit ex. Commodo nostrud sint deserunt ex aliquip dolore mollit reprehenderit cillum. Eu ut excepteur labore officia in anim duis incididunt in.</p>
+
+            <p>Mollit deserunt mollit minim nostrud culpa id quis velit eiusmod dolor aliquip cupidatat aliqua adipisicing. Dolore eiusmod reprehenderit culpa Lorem fugiat nostrud. Nisi officia officia reprehenderit qui labore. Officia proident adipisicing laborum elit cillum id irure non ut.</p>
+
+            <p>Ex non et enim excepteur non quis commodo voluptate eu. Magna et qui consequat pariatur adipisicing. Aliqua incididunt est veniam anim ullamco reprehenderit ullamco deserunt mollit. Tempor ad cupidatat nisi sunt aliqua. Dolor eu ea aute veniam deserunt ullamco deserunt officia tempor esse adipisicing nostrud amet anim. Dolor consequat fugiat ea velit sit sit sunt nostrud officia exercitation. Ex elit esse qui quis eiusmod labore cupidatat aliqua labore laborum cillum.</p>
+        {% endset %}
+        <twig:Atoms:RichText :text="text" />
+   </twig:Utils:Section>
+{% endblock %}

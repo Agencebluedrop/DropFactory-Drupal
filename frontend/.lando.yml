@@ -1,0 +1,31 @@
+name: bluedrop-factory
+recipe: symfony
+config:
+  webroot: public
+  php: 8.3
+services:
+  database:
+    creds:
+      user: factory
+      password: factory
+      database: factory
+  remote_database:
+    type: mysql
+    creds:
+      user: remote
+      password: remote
+      database: remote
+  phpmyadmin:
+    type: phpmyadmin
+    hosts:
+      - remote_database
+      - database
+  node:
+    type: node:20
+tooling:
+  node:
+    service: node
+  npm:
+    service: node
+  yarn:
+    service: node

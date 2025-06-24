@@ -1,0 +1,20 @@
+---
+
+# Add UNIX account create (for the platforms) to a special purpose UNIX group
+# This group would allow to apply special permissions on ssh configuration
+# Like allowing connections to it (with AllowGroups)
+#
+# Default : empty (no group) 
+dropfactory_ssh_allowgroup: ''
+
+# Add the following dic of keys to the *authorized_keys* of the UNIX account
+# created for the drupal platform
+#
+# Default : [] (empty dic)
+dropfactory_ssh_keys: []
+
+
+# Change this variable if dropfactory-backend
+#
+# Default : /home/dropfactory_backend/dropfactory_backend/conf/deploy_key.ed25519.pub
+# dropfactory_deploy_key_path: '/path/to/key'

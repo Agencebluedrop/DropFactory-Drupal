@@ -1,0 +1,12 @@
+<div x-cloak x-show="itemsSelected > 0"> 
+    <twig:Utils:Section :withGrid="false" containerClasses="border-t-2 border-brand-secondary !pt-10">
+        <div {{ attributes.defaults({class: 'flex items-center justify-center gap-4 flex-wrap'}) }}>
+            <twig:Atoms:Select selectId="tasks" :options="optionsArray" />
+            <twig:Atoms:Button label="Lancer la tâche" icon="arrow-right" alpineUrl="{{ selectUrl }}" />
+            {# {% set toggleButton %}
+                <twig:Atoms:Button label="Lancer la tâche" icon="arrow-right"  clickEvent="modelOpen = !modelOpen" />
+            {% endset %}
+            <twig:Molecules:Modal :toggleButton="toggleButton" modalTitle="Êtes-vous vraiment sûr de vouloir vider les caches ?" modalText="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"/> #}
+        </div>
+    </twig:Utils:Section>
+</div>

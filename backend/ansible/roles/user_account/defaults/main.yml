@@ -1,0 +1,6 @@
+---
+
+dropfactory_platform_unix_user: ''
+
+dropfactory_ssh_allowgroup: ''
+dropfactory_ssh_keys: []

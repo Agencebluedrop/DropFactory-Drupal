@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Platform{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="{{ platform.name }}" />
+{% endblock %}
+
+{% block body %}
+
+    {# Tableau 1 #}
+    {% set tableContentArray = [
+        ['Platform Status', platform.status],
+        ['Git Repository', platform.gitRepositoryURL],
+        ['Git Branch', platform.gitRepositoryBranch],
+    ] %}
+    {% set tableHeader = ['Site', 'Install Profile'] %}
+    {% set platformSitesArray = [ [{'platformSites': platform.sites}]] %}
+    <twig:Utils:Section :withGrid="false">
+        <div class="space-y-10">
+            <twig:Atoms:Table :tableCells="tableContentArray" :withCheckbox="false" :withTasks="false" />
+            <twig:Atoms:Table :tableCells="platformSitesArray" :tableHeader="tableHeader" :withCheckbox="false" :withTasks="false" />
+        </div>
+    </twig:Utils:Section>
+
+{% endblock %}

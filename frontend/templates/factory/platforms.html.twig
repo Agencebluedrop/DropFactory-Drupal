@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plateformes{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Toutes les plateformes" buttonText="Ajouter une plateforme" buttonUrl="{{path('app_new_platform')}}" />
+{% endblock %}
+
+{% block body %}
+    <div x-data="{ 
+        itemsSelected: 0, 
+        checkedIds: [], 
+        selectedOption: null,
+        concatIds() {
+            return this.checkedIds.join('+'); // Concatenates numbers into a single string
+        },
+        selectUrl() {
+            return `/add_group_task/PLATFORM_VERIFY/${this.concatIds()}`;
+        } 
+    }" >
+        <twig:Utils:Section :withGrid="false">
+            {% set count = tablesCells|length ~ " plateformes" %}
+            <twig:Atoms:RichText headline="{{ count }}" headlineTag="h3" />
+            <div class="mt-8 md:mt-10">
+                <twig:Atoms:Table :tableCells="tablesCells" />
+            </div>
+        </twig:Utils:Section>
+        {% set selectOptions = [
+            {'label' : 'vérifier les plateformes', 'action_url': 'verify_platforms'}
+        ] %}
+        <twig:Molecules:LaunchTask selectUrl="selectUrl()" :optionsArray="selectOptions" />
+    </div>
+{% endblock %}

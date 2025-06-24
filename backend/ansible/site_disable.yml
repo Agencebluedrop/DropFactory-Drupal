@@ -1,0 +1,30 @@
+##
+# ansible-playbook -i site_disable.yml
+---
+- name: Disable a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+
+  vars_files:
+    - vars/main.yml
+
+  vars:
+    in_template: "disabled"
+
+  # pre_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} pre-run playbook.yml playbook"
+
+  roles:
+    - nginx_vhost
+
+  # post_tasks:
+  #   - include_role:
+  #       name: etc-git
+  #       tasks_from: commit.yml
+  #     vars:
+  #       commit_message: "Ansible {{ ansible_version.full }} post-run playbook.yml playbook"

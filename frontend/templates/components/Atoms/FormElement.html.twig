@@ -1,0 +1,6 @@
+{% set inputClasses = 'form-control px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full' %}
+{% set labelClasses = 'block text-brand-secondary text-xs uppercase font-bold mb-2' %}
+<div{{ attributes.defaults({class: 'form-element'}) }}>
+    <label for="{{ inputId }}" class="{{ labelClasses }}">{{ label }}</label>
+    <input type="{{ inputType }}" {% if value %} value="{{ value }}" {% endif %} name="{{ name }}" id="{{ inputId }}" class="{{ inputClasses }}" {% if autocompleteVal %} autocomplete="{{ autocompleteVal }}" {% endif %} {% if required %} required {% endif %} {{ additionalAttributes }}>
+</div>

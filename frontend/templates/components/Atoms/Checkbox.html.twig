@@ -1,0 +1,7 @@
+{% set inputClasses = 'appearance-none w-6 h-6 border-2 border-brand-primary bg-white rounded-lg checked:bg-brand-primary bg-checkbox-checked bg-center bg-[length:1rem] bg-no-repeat' %}
+{% set labelClasses = 'absolute top-0 left-0 z-[1] w-full h-full text-[0px] hover:cursor-pointer' %}
+<div{{ attributes.defaults({class: 'checkbox-wrapper h-6'}) }}>
+    <input type="checkbox" id="{{ checkboxId }}" name="checkbox" value="checkbox" class="{{ inputClasses }}" x-model="isChecked" {% if changeEvent %} @change="{{ changeEvent }}"{% endif %}
+     />
+    <label for="{{ checkboxId }}" class="{{ labelClasses }}">hidden label</label>
+</div>

@@ -1,0 +1,178 @@
+<div{{ attributes.defaults({class: 'table-wrapper overflow-auto lg:overflow-visible'}) }}  x-init="
+        $el.addEventListener('checkbox-changed', event => {
+            const checkboxId = event.target.id;
+            if (event.detail.isChecked) {
+                itemsSelected += 1;
+                checkedIds.push(checkboxId);
+            } else {
+                itemsSelected -= 1;
+                checkedIds = checkedIds.filter(id => id !== checkboxId);
+            }
+        });
+    ">
+    <table class='table w-full'>
+        {% if tableHeader[0] is not empty and tableHeader is defined %}
+            <thead>
+                <tr>
+                {% for cell in tableHeader %}
+                    <th scope="col" class="py-6 px-2 text-left">
+                        {{ cell }}
+                    </th>
+                {% endfor %}
+                </tr>
+            </thead>
+        {% endif %}
+            <tbody>
+                {% for row in tableCells %}
+                    <tr class="relative even:bg-neutral-50 odd:bg-white" x-data="{ isChecked: false, online: true }" 
+                        :class="{'!bg-brand-tertiary': isChecked, '!bg-error/10': !online && !isChecked}"
+                    >
+                        {% if withCheckbox %}
+                            <td class="py-4 pr-2 pl-6">
+                                <twig:Atoms:Checkbox checkboxId="{{ loop.index }}"  changeEvent="$dispatch('checkbox-changed', { isChecked: isChecked })"/>
+                            </td>
+                        {% endif %}
+
+                        {% for key, cell in row %}
+                            {% if cell is iterable %}
+                                {% if cell.status is defined %}
+                                    <td class="pr-2 pl-6 py-4">
+                                        <twig:Atoms:Status status="{{cell.status}}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.parameters is defined and cell.parameters is not empty %}
+                                    <td class="py-6 px-2">
+                                        {% set toggleButton %}
+                                            <twig:Atoms:Button label="info" icon="info-icon" buttonIcon="true" iconSize="large" clickEvent="modelOpen = !modelOpen" />
+                                        {% endset %}
+                                        {% set text %}
+                                            <div class="space-y-4">
+                                                {% for key, info in cell.parameters %}
+                                                <span class="block">
+                                                    <span class="font-bold">{{ key }} : </span> 
+                                                    {{ info }}
+                                                </span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endset %}
+                                        <twig:Molecules:Modal :toggleButton="toggleButton" :modalText="text"/>
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.online is defined %}
+                                    <td class="py-6 px-2">
+                                        <twig:Atoms:Badge online="{{cell.online}}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.taskLabel is defined %}
+                                    <td class="py-6 px-2 text-right">
+                                       <twig:Atoms:RichText text="{{ cell.taskLabel ~ ' : ' }}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.resourceName is defined and cell.resourcePath is not empty %}
+                                    <td class="py-6 px-2">
+                                        {% if cell.resourcePath != '#' %}
+                                            <twig:Atoms:Link label="{{ cell.resourceName}}" url="{{ cell.resourcePath }}" :underline="false" linkClasses="z-10 relative !text-black" />
+                                        {% else %}
+                                            <twig:Atoms:RichText text="{{ cell.resourceName }}" />
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                {% if cell.platformSites is defined %}
+                                    {% for site in cell.platformSites %}
+                                        <tr class="even:bg-neutral-50 odd:bg-white">
+                                            {# col 1 : lien site #}
+                                            <td class="py-6 px-2 "><a href="{{ path('app_site', {id: site.id}) }}">{{ site.name }}</a></td>
+
+                                            {# col 2 : profil d'installation #}
+                                            {% if site.installProfile %}
+                                                <td class="py-6 px-2 ">{{ site.installProfile.name }}</td>
+                                            {% else %}
+                                                <td class="py-6 px-2 ">No install profile</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if cell.createdAt is defined %}
+                                    <td class="py-6 px-2">
+                                        <twig:Atoms:RichText text="{{cell.createdAt}}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.startedAt is defined %}
+                                    <td class="py-6 px-2">
+                                        <twig:Atoms:RichText text="{{cell.startedAt}}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.duration is defined %}
+                                    <td class="py-6 px-2">
+                                        <twig:Atoms:RichText text="{{cell.duration}}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.name is defined and cell.url is defined %}
+                                    <td class="py-6 px-2">
+                                      <twig:Atoms:Link label="{{cell.name}}" url="{{ cell.url }}" :underline="false" linkClasses="z-10 relative !text-black" />
+                                    </td>
+                                {% endif %}
+                                {% if cell.siteName is defined and cell.url is defined %}
+                                    <td class="py-6 whitespace-nowrap">
+                                        <twig:Atoms:Link label="{{cell.siteName}}" url="{{ cell.url }}" :underline="false" linkClasses="z-10 relative !text-black" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.siteUrl is defined and cell.siteUrl is not empty %}
+                                    <td class="py-6 px-2 whitespace-nowrap">
+                                        <twig:Atoms:ButtonExternal label="{{ cell.siteUrl }}" url="{{ cell.siteUrl }}" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.git is defined %}
+                                    <td class="py-6 px-2 whitespace-nowrap">
+                                        <twig:Atoms:RichText text="{{cell.git}}" textClasses="font-medium text-xs leading-5 text-cyan-800" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.installProfile is defined %}
+                                    <td class="py-6 px-2 whitespace-nowrap">
+                                        <twig:Atoms:RichText text="Profil : {{cell.installProfile}}" textClasses="font-medium text-xs leading-5 text-cyan-800" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.connecterUrl is defined and cell.connecterUrl is not empty %}
+                                    <td class="py-3 px-2 whitespace-nowrap">
+                                        <twig:Atoms:Button label="Se connecter" variant="outline" icon="arrow-right" url="{{ cell.connecterUrl }}" iconSize="medium" />
+                                    </td>
+                                {% endif %}
+
+                                {% if cell.availableTasks is defined and cell.availableTasks is not empty %}
+                                    <td class="py-4 pl-2 pr-6 w-[10%]">
+                                        <twig:Molecules:Dropdown :listItems="cell.availableTasks"/>
+                                    </td>
+                                {% endif %}
+                                
+                            {% else %}
+                            {% set listItems = [
+                                { 'label': 'Supprimer la sauvegarde', 'icon': 'trash'},
+                                { 'label': 'Restaurer la sauvegarde', 'icon': 'reinitialise'},
+                                { 'label': 'Télécharger la sauvegarde', 'icon': 'save'},
+                            ] %}
+                                <td class="py-6 px-2 whitespace-nowrap first:pl-6 first:font-bold">
+                                    <twig:Atoms:RichText text="{{cell}}" textClasses="text-base text-cyan-1000" />
+                                </td>
+                                {% if loop.last and withTasks %}
+                                    <td class="py-4 pl-2 pr-6 w-[10%]">
+                                        <twig:Molecules:Dropdown :listItems="listItems" />
+                                    </td>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>

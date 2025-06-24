@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Site{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="{{ site.name }}" />
+{% endblock %}
+
+{% block body %}
+   {% set siteUrl %}
+        <a href="{{ site.domain }}" target="_blank">{{ site.domain }}</a>
+    {% endset %}
+    {% set domainAliases %}
+        <ul>
+            {% for alias in site.aliases %}
+                <li>{{ alias.domain }}</li>
+            {% endfor %}
+        </ul>
+    {% endset %}
+    {% set tableContentArray = [
+        ['Site', siteUrl],
+        ['Platform', site.platform.name],
+        ['Install profile', site.installProfile.name],
+        ['Language', site.language],
+        ['Status', site.status],
+        ['Domain aliases', domainAliases],
+    ] %}
+    <twig:Utils:Section :withGrid="false">
+            <twig:Atoms:Table :tableCells="tableContentArray" :withCheckbox="false" :withTasks="false" />
+    </twig:Utils:Section>
+
+{% endblock %}
+ 

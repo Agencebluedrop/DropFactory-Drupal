@@ -1,0 +1,7 @@
+{% set classes = classes|default('h-10 lg:h-12 w-auto footer:h-10 lg:footer:h-7') %}
+<a{{ attributes.defaults({class: 'block'})  }} href="{{ url }}">
+        <img src="{{ asset('images/' ~ logo ~ '.svg') }}" alt="Brand Logo" class="{{ classes }} {% if logo == 'logo' %} lg:block hidden {% endif %}">
+    {% if logo == 'logo' %}
+        <img src="{{ asset('images/logo-mobile.svg') }}" alt="Brand Logo" class="{{ classes }} {% if logo == 'logo' %} lg:hidden block {% endif %}">
+    {% endif %}
+</a>

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Platform{% endblock %}
+
+{% block header %}{% endblock %}
+{% block body_classes %} bg-brand-tertiary{% endblock %}
+{% block body %}
+    {% set formContentArray = [] %}
+    {% set formContent %}
+        <div class="space-y-10">
+            <twig:Atoms:Button label="back" :buttonIcon="true" url="{{path('app_platforms')}}" icon="arrow-back" rounded="true" />
+            <twig:Molecules:FormContainer formTitle="Ajouter une nouvelle plateforme">
+                {{ form(form) }}
+            </twig:Molecules:FormContainer>
+        </div>
+    {% endset %}
+    {% set formContentArray = formContentArray|merge([formContent]) %}
+    <twig:Utils:Section :withGrid="false">
+        <div class="flex justify-center mb-10">
+            <twig:Atoms:Logo logo="logo-vertical" url="{{ path('app_homepage') }}" classes="h-[92px] w-auto" />
+        </div>
+        <twig:Utils:Grid :items="formContentArray" columns='1' columnsWidth="8" />
+    </twig:Utils:Section>
+{% endblock %}
+{% block footer %}{% endblock %}

@@ -1,0 +1,9 @@
+server {
+	listen [::]:80;
+	listen      80;
+	access_log      /home/{{ dropfactory_site_platform_user }}/log/access.log;
+	error_log       /home/{{ dropfactory_site_platform_user }}/log/error.log;
+	server_name {{ dropfactory_site_domain | join(' ') }};
+	
+	return 503 "Site disabled";
+}

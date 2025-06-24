@@ -1,0 +1,9 @@
+<svg width="32" height="32" viewBox="0 0 32 32" stroke="currentColor" fill="none"
+    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+        d="M15.9998 29.3334C23.3636 29.3334 29.3332 23.3638 29.3332 16C29.3332 8.63622 23.3636 2.66669 15.9998 2.66669C8.63604 2.66669 2.6665 8.63622 2.6665 16C2.6665 23.3638 8.63604 29.3334 15.9998 29.3334Z"
+        stroke-width="2.5"  />
+    <path d="M12 14H16V22" stroke-width="2.5"  />
+    <path d="M12 22H20" stroke-width="2.5"  />
+    <path d="M16 10.6667V8" stroke-width="2.5"  />
+</svg>

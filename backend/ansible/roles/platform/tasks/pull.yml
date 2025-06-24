@@ -1,0 +1,15 @@
+---
+
+- name: Pull
+  ansible.builtin.git:
+    repo: "{{ dropfactory_platform_git_url }}"
+    version: "{{ dropfactory_platform_git_branch }}"
+    dest: "~{{ dropfactory_platform_unix_user }}/platform/"
+    key_file: "~{{ dropfactory_platform_unix_user }}/.ssh/id_ed25519"
+    accept_newhostkey: true
+    clone: false
+    update: true
+    umask: '0027'
+    force: true
+  become: true
+  become_user: "{{ dropfactory_platform_unix_user }}"

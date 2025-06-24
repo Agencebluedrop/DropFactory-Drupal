@@ -1,0 +1,14 @@
+{% set heroClasses = 'relative w-full pb-10 lg:pt-0 pt-10 lg:pb-[112px] bg-white lg:bg-brand-primary lg:text-center' %}
+{% set gridContent %}
+    <twig:Atoms:RichText headline="{{ label }}" headlineTag="h1" headingClasses="text-brand-secondary lg:text-white" />
+{% endset %}
+{% set gridItems = [gridContent] %}
+
+<div{{ attributes.defaults({class: heroClasses}) }}>
+    <twig:Utils:Section gridItems="{{ gridItems }}" columnsWidth="10" withPadding="{{false}}"/>
+    {% if buttonUrl %}
+        <div class="fixed lg:absolute lg:-bottom-[30px] left-0 bottom-[50px] z-30 w-full flex justify-center">
+            <twig:Atoms:Button label="{{ buttonText }}" url="{{ buttonUrl }}" variant="tertiary" size="large" icon="rocket" />
+        </div>
+    {% endif %}
+</div>

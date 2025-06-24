@@ -1,0 +1,4 @@
+---
+
+dropfactory_platform_unix_user: ''
+dropfactory_deploy_key_path: '/home/dropfactory_backend/dropfactory_backend/conf/deploy_key.ed25519'

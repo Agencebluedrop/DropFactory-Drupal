@@ -1,0 +1,34 @@
+{% set classes = [
+    'flex relative items-center justify-center gap-2 text-sm md:text-base font-bold rounded-[40px] px-8 transition',
+    size == 'default' ? 'py-3 shadow-custom' : 'uppercase tracking-[2px] leading-7 py-4 border-2 border-brand-secondary',
+    variant == 'default' ? 'bg-brand-primary text-white hover:bg-primary-800',
+    variant == 'outline' ? 'bg-white text-brand-primary border-2 border-brand-primary hover:bg-neutral-100',
+    variant == 'tertiary' ? 'bg-white text-brand-secondary hover:bg-neutral-100',
+    buttonIcon and not rounded ? '!p-0 !bg-transparent',
+    buttonIcon and rounded ? '!p-3 !bg-white w-[44px] h-[44px]',
+    buttonClasses,
+    not buttonContent ? 'z-10'
+] %}
+{% set classesString = classes | filter(v => v != '') | join(' ') %}
+{% set tagType = url or alpineUrl ? 'a' : 'button' %}
+{% if variant == 'default' and not buttonIcon %}
+    {% set btnIconColor = "icon-path:stroke-white" %}
+{% endif %}
+
+<{{tagType}} {{ attributes.defaults({class: classesString}) }} {% if url %} href="{{ url }}" {% endif %} {% if alpineUrl %} :href="{{ alpineUrl|raw }}" {% endif %}
+{% if clickEvent %} @click="{{clickEvent}}" {% endif %} {% if type %} type="{{ type }}" {% endif %} {% if additionalAtt %}{{ additionalAtt }}{% endif %}>
+    {% if buttonContent %}
+        {% block content %} {% endblock %}
+    {% else %}
+        {% if buttonIcon %}
+            <span class="sr-only">
+        {% endif %}
+            {{ label }}
+        {% if buttonIcon %}
+            </span>
+            {% endif %}
+    {% endif %}
+     {% if icon %}
+        <twig:Atoms:Icon icon="{{icon}}" size="{{iconSize}}" iconColor="{{ btnIconColor }}" />
+    {% endif %}
+</{{tagType}}>

@@ -1,0 +1,17 @@
+---
+
+- name: Ensure .ssh folder exists
+  ansible.builtin.file:
+    dest: "/home/{{ dropfactory_platform_unix_user }}/.ssh/"
+    state: directory
+    mode: "0700"
+    owner: "{{ dropfactory_platform_unix_user }}"
+    group: "{{ dropfactory_platform_unix_user }}"
+
+- name: Copy deploy_key
+  ansible.builtin.copy:
+    src: "{{ dropfactory_deploy_key_path }}"
+    dest: "/home/{{ dropfactory_platform_unix_user }}/.ssh/id_ed25519"
+    mode: "0700"
+    owner: "{{ dropfactory_platform_unix_user }}"
+    group: "{{ dropfactory_platform_unix_user }}"

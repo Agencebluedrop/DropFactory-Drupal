@@ -1,0 +1,16 @@
+{% set statusColors = {
+    'pending': 'bg-pending',
+    'success': 'bg-success',
+    'warning': 'bg-warning !text-black',
+    'failed': 'bg-error',
+    'running': 'bg-brand-primary'
+} %}
+{% set statusClass = statusColors[status|lower] ?? '' %}
+{% set badgeClasses = [
+    'text-xs leading-4 block w-fit uppercase text-white py-1 px-3 font-bold shadow-badge',
+    statusClass
+] %}
+{% set classesString = badgeClasses | filter(v => v != '') | join(' ') %}
+<span{{ attributes.defaults({class: classesString}) }}>
+    {{ status }}
+</span>

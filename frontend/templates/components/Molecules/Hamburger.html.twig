@@ -1,0 +1,18 @@
+
+<button{{ attributes.defaults({class: 'bg-brand-primary w-8 h-8 relative focus:outline-none'}) }}
+ x-data="{ isOpen: false, removeBodyScroll: () => {
+            let body = document.getElementsByTagName('body')[0];
+            body.classList.add('overflow-hidden');
+        }, onCloseFunction: () => {
+            let body = document.getElementsByTagName('body')[0];
+            body.classList.remove('overflow-hidden');
+        } }"
+    x-init="{{ openClass }}"
+    @click="isOpen = {{openClass}} = !{{openClass}}; isOpen ? removeBodyScroll() : onCloseFunction()" >
+  <span class="sr-only">Open main menu</span>
+  <div class="block w-4 absolute left-1/2 top-1/2  transform  -translate-x-1/2 -translate-y-1/2 text-white">
+    <span aria-hidden="true" class="block absolute h-[2px] w-4 bg-white transform transition duration-500 ease-in-out" :class="{'rotate-45': {{openClass}},' -translate-y-1.5': !{{openClass}} }"></span>
+    <span aria-hidden="true" class="block absolute h-[2px] w-4 bg-white transform transition duration-500 ease-in-out" :class="{'opacity-0': {{openClass}} } "></span>
+    <span aria-hidden="true" class="block absolute h-[2px] w-4 bg-white transform transition duration-500 ease-in-out" :class="{'-rotate-45': {{openClass}}, ' translate-y-1.5': !{{openClass}}}"></span>
+  </div>
+</button>

@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+svg {
+    @apply w-full h-full
+}
+.alert-msg + .alert-msg {
+    margin-top: 0.5rem;
+}
+
+  .tag {
+    display: flex;
+    align-items: center;
+    background-color: theme('colors.brand.primary');
+    color: theme('colors.white');
+    padding: 6px 12px;
+    border-radius: 24px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .tag span {
+    margin-right: 8px;
+  }
+  .tag button {
+    background-image: url('../images/close-white.svg');
+    background-size: 16px;
+    background-repeat: no-repeat;
+    width: 16px; height: 16px;
+    background-position: center;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 0;
+  }
+  .tag button:hover {
+    opacity: 0.8;
+  }

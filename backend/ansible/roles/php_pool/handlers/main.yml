@@ -1,0 +1,7 @@
+---
+
+
+- name: Reload php8.2-fpm
+  ansible.builtin.service:
+    name: php8.2-fpm
+    state: reloaded

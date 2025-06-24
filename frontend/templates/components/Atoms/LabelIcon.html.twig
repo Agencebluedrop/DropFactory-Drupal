@@ -1,0 +1,8 @@
+{% set classes = 'flex items-center gap-2' %}
+
+<div{{ attributes.defaults({class: classes}) }}>
+    {% if icon %}
+        <twig:Atoms:Icon icon="{{icon}}" />
+    {% endif %}
+    <span class="font-bold"> {{ label }}</span>
+</div>

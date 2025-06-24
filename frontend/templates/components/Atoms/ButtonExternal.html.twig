@@ -1,0 +1,7 @@
+
+{% set classes = 'flex items-center justify-between gap-2 relative z-10 bg-white hover:bg-neutral-50 transition border-2 border-neutral-200 rounded-[40px] py-3 px-[22px] text-xs leading-5 font-medium text-cyan-800' %}
+
+<a{{ attributes.defaults({class: classes, href: url, target: '_blank'}) }}>
+    {{ label }}
+    <twig:Atoms:Icon icon="external" size="medium" />
+</a>

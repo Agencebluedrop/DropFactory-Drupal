@@ -1,0 +1,82 @@
+---
+
+- name: "Create group {{ dropfactory_platform_unix_user | mandatory }}"
+  ansible.builtin.group:
+    name: "{{ dropfactory_platform_unix_user | mandatory }}"
+    state: present
+  tags:
+    - user_account
+
+- name: "Add www-data to group {{ dropfactory_platform_unix_user }}"
+  ansible.builtin.user:
+    name: 'www-data'
+    groups: "{{ dropfactory_platform_unix_user }}"
+    append: true
+  notify: Reload nginx
+  tags:
+    - user_account
+
+- name: "Create user {{ dropfactory_platform_unix_user }}"
+  ansible.builtin.user:
+    name: "{{ dropfactory_platform_unix_user }}"
+    group: "{{ dropfactory_platform_unix_user }}"
+    groups: "{{ dropfactory_platform_unix_user }},www-data"
+    append: true
+    state: present
+    shell: /bin/bash
+    password: '!'
+  tags:
+    - user_account
+
+- name: Create basic directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ dropfactory_platform_unix_user }}"
+    group: "{{ dropfactory_platform_unix_user }}"
+    mode: "0755"
+  with_items:
+    - "/home/{{ dropfactory_platform_unix_user }}"
+    - "/home/{{ dropfactory_platform_unix_user }}/log"
+  tags:
+    - user_account
+
+- name: "Create www-app's user www-{{ dropfactory_platform_unix_user }}"
+  ansible.builtin.user:
+    name: "www-{{ dropfactory_platform_unix_user }}"
+    group: "{{ dropfactory_platform_unix_user }}"
+    groups: "{{ dropfactory_platform_unix_user }},www-data"
+    append: true
+    state: present
+    home: "/does_not_exists"
+    shell: /bin/false
+    createhome: false
+    password: "!"
+  tags:
+    - user_account
+
+- name: "Add ~/platform/vendor/bin in PATH"
+  ansible.builtin.lineinfile:
+    dest: "/home/{{ dropfactory_platform_unix_user }}/.profile"
+    insertafter: EOF
+    line: 'PATH="$PATH:~/platform/vendor/bin"'
+
+- name: "Deploy admins SSH keys"
+  ansible.posix.authorized_key:
+    user: "{{ dropfactory_platform_unix_user }}"
+    state: present
+    key: "{{ line_item }}"
+  with_items: "{{ dropfactory_ssh_keys }}"
+  loop_control:
+    loop_var: line_item
+  tags:
+    - user_account
+
+- name: Add account to a special group for SSH access (if required)
+  ansible.builtin.user:
+    name: "{{ dropfactory_platform_unix_user }}"
+    groups: "{{ dropfactory_ssh_allowgroup }}"
+    append: true
+  when: dropfactory_ssh_allowgroup | length > 0
+  tags:
+    - user_account

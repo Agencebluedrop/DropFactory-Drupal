@@ -1,0 +1,8 @@
+---
+
+- name: Clear Cache
+  ansible.builtin.shell:
+    chdir: "~{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
+    cmd: "umask 027; ~/platform/vendor/bin/drush cache:clear bin static,bootstrap,config,default,entity,menu,render,access_policy,data,discovery,dynamic_page_cache,page,toolbar --yes"
+  become: true
+  become_user: "{{ dropfactory_site_platform_user }}"

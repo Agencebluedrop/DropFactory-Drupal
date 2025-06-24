@@ -1,0 +1,15 @@
+{% set iconSize = [
+    'shrink-0',
+    size == 'small' ? 'w-3 h-3' : null,
+    size == 'medium' ? 'w-4 h-4' : null,
+    size == 'default' ? 'w-5 h-5' : null,
+    size == 'large' ? 'w-6 h-6' : null,
+    size == 'xlarge' ? 'w-8 h-8' : null,
+    iconColor
+] %}
+
+{% set iconSize = iconSize | filter(v => v != null) %}
+
+<div{{ attributes.defaults({class: iconSize | join(' ')}) }}>
+    {{ source('components/Atoms/svgs/' ~ icon ~ '.svg') }}
+</div>

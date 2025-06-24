@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+ {% set formContentArray = [] %}
+ {% set inputClasses = 'form-control px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full' %}
+ {% set labelClasses = 'block text-brand-secondary text-xs uppercase font-bold mb-2' %}
+ {% set checkboxinputClasses = '-order-1 appearance-none w-6 h-6 border-2 border-brand-primary bg-white rounded-lg checked:bg-brand-primary bg-checkbox-checked bg-center bg-[length:1rem] bg-no-repeat' %}
+  {% set errors = 'error-item:text-error error-item:text-xs error-item:uppercase error-item:font-bold [&>ul]:mb-2' %}
+
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+    {% set formContent %}
+            <twig:Molecules:FormContainer formTitle="Register">
+                {{ form_errors(registrationForm) }}
+
+                {{ form_start(registrationForm, {
+                    attr: { class: 'space-y-6' },
+                }) }}
+                {{ form_row(registrationForm.email, {
+                    attr: { class: inputClasses },
+                    label_attr: { class: labelClasses },
+                    row_attr: { class: errors}
+                }) }}
+                {{ form_row(registrationForm.plainPassword, {
+                    label: 'Password',
+                    attr: { class: inputClasses },
+                    label_attr: { class: labelClasses },
+                    row_attr: { class: errors}
+                }) }}
+                {# {{ form_row(registrationForm.agreeTerms, {
+                    attr: { class: checkboxinputClasses },
+                    row_attr: { class: 'flex items-center gap-2' },
+                }) }} #}
+                <twig:Atoms:Button type="submit" label="Register" buttonClasses="w-full" />
+                {{ form_end(registrationForm) }}
+            </twig:Molecules:FormContainer>
+    {% endset %}
+    {% set formContentArray = formContentArray|merge([formContent]) %}
+    <twig:Utils:Section :gridItems="formContentArray" columns="1" columnsWidth="8" />
+{% endblock %}

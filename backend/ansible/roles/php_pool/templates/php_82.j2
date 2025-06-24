@@ -1,0 +1,24 @@
+[{{ dropfactory_platform_unix_user }}]
+user = www-{{ dropfactory_platform_unix_user }}
+group = {{ dropfactory_platform_unix_user }}
+
+
+listen = /home/{{ dropfactory_platform_unix_user }}/php8.2-fpm.sock
+listen.owner = {{ dropfactory_platform_unix_user }}
+listen.group = www-data
+
+pm = ondemand
+pm.status_path = /fpm-status
+pm.max_children = 20
+pm.process_idle_timeout = 10s
+; To avoid memory leaks we want children to restart after 1000 requests executed
+pm.max_requests = 1000
+; We kill processes that last more than 300 seconds
+request_terminate_timeout = 300
+php_admin_value[error_log] = /home/{{ dropfactory_platform_unix_user }}/log/php.log
+php_admin_value[memory_limit] = {{ php_memory_limit }}M
+php_admin_value[max_execution_time] = {{ php_max_execution_time }}
+php_admin_value[upload_max_filesize] = {{ php_upload_max_filesize }}M
+php_admin_value[post_max_size] = {{ php_post_max_size }}M
+php_admin_value[output_buffering] = On
+

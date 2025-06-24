@@ -1,0 +1,37 @@
+---
+- name: Create database "{{ dropfactory_site_db }}"
+  community.mysql.mysql_db:
+    name: "{{ dropfactory_site_db }}"
+    state: present
+  tags:
+    - create_database
+
+- name: Create a password for "{{ dropfactory_site_db }}"
+  ansible.builtin.command:
+    cmd: "apg -n 1 -m 28 -M lcN"
+  register: dropfactory_site_db_password
+  changed_when: false
+  check_mode: false
+
+- name: Create MySQL user "{{ dropfactory_site_db }}"
+  community.mysql.mysql_user:
+    name: "{{ dropfactory_site_db }}"
+    password: '{{ dropfactory_site_db_password.stdout }}'
+    host: "localhost"
+    priv: "{{ dropfactory_site_db }}.*:ALL"
+    update_password: on_create
+    state: present
+  tags:
+    - create_database
+
+- name: Save password in /root/.my.cnf
+  community.general.ini_file:
+    path: "/root/.my.cnf"
+    section: "{{ dropfactory_site_db }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: '0600'
+  with_items:
+    - {option: 'login', value: "{{ dropfactory_site_db }}"}
+    - {option: 'database', value: "{{ dropfactory_site_db }}"}
+    - {option: 'password', value: "{{ dropfactory_site_db_password.stdout }}"}

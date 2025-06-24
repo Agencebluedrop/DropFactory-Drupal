@@ -1,0 +1,8 @@
+{% set badgeClasses = [
+    'text-xs leading-4 block w-fit uppercase text-white py-1 px-3 rounded-2xl font-bold shadow-badge',
+    online ? 'bg-success' : 'bg-error'
+] %}
+{% set classesString = badgeClasses | filter(v => v != '') | join(' ') %}
+<span{{ attributes.defaults({class: classesString}) }} x-init="online= {{ online|json_encode  }}">
+    {{ online ? 'en ligne' : 'désactivé'}}
+</span>

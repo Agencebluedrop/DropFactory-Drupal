@@ -1,0 +1,3 @@
+src/conf/config.ini
+src/conf/deploy_key.*
+src/ansible/vars/main.yml

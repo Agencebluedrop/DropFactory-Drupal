@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Icons{% endblock %}
+{% block hero %}
+    <twig:Molecules:Hero label="Liste des icones" />
+{% endblock %}
+{% block body %}
+    {% set iconArray = [] %}
+        {% for svgFile in svgFiles %}
+            {% set iconEntry %}
+                <div class="text-center">
+                    <div class="inline-block w-12 h-12">
+                        {{ source('components/Atoms/svgs/' ~ svgFile) }}
+                    </div>
+                    <div class="mb-2 text-brand-secondary font-bold">{{ svgFile }}</div>
+                </div>
+            {% endset %}
+            {% set iconArray = iconArray|merge([iconEntry]) %}
+        {% endfor %}
+     <twig:Utils:Section :gridItems="iconArray" :columns='4' />
+{% endblock %}
