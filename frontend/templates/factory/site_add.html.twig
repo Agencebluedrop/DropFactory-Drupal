@@ -13,7 +13,7 @@
         <div class="space-y-10">
             <twig:Atoms:Button label="back" :buttonIcon="true" url="{{path('app_sites')}}" icon="arrow-back" rounded="true" />
 
-            <twig:Molecules:FormContainer formTitle="Déployer un nouveau site">
+            <twig:Molecules:FormContainer formTitle="Deploy new site">
                 {# {{ form(form) }} #}
                 {{ form_start(form, { attr: { id: 'site_add_form' } }) }}
                     {{ form_row(form.name) }}

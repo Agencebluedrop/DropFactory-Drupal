@@ -9,10 +9,11 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
-#/databases/
+/databases/
 *.gz
 
 ###> symfony/asset-mapper ###
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+

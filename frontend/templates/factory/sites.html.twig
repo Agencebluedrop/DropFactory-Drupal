@@ -3,14 +3,14 @@
 {% block title %}Sites{% endblock %}
 
 {% block hero %}
-    <twig:Molecules:Hero label="Tous les sites" buttonUrl="{{path('app_new_site')}}" buttonText="Créer un site" />
+    <twig:Molecules:Hero label="Sites" buttonUrl="{{path('app_new_site')}}" buttonText="New site" />
 {% endblock %}
 
 {% block body %}
     {% set selectArray = [
-        {'label' : 'Vider les caches', 'action_url': 'SITE_CLEAR_CACHE'},
+        {'label' : 'Clear caches', 'action_url': 'SITE_CLEAR_CACHE'},
         {'label' : 'Run cron', 'action_url': 'SITE_RUN_CRON'},
-        {'label' : 'update database', 'action_url': 'SITE_DB_UPDATES'},
+        {'label' : 'Update database', 'action_url': 'SITE_DB_UPDATES'},
     ] %}
     <div x-data='{ itemsSelected: 0, selectOptions: {{ selectArray|json_encode|raw }}, selectedOption: { value: "SITE_CLEAR_CACHE" },
         checkedIds: [], 

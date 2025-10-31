@@ -31,6 +31,14 @@ final class Version20241203212831 extends AbstractMigration
         ) DEFAULT CHARACTER
         SET
           utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+
+        $this->connection->insert('User', [
+            'id' => 1,
+            'email' => 'factoryadmin@bluedrop.fr',
+            'roles' => ['ROLE_ADMIN'],
+            'password' => '$2y$13$jK.1xN8TzhefK.NL.Hbs4.LLZ/D9nDIl2GsUImjyAU6ZT5A8KLxKe',
+            'isVerified' => true,
+        ]);
     }
 
     public function down(Schema $schema): void

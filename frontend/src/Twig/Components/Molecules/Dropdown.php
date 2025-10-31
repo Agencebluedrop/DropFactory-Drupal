@@ -7,13 +7,13 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 final class Dropdown
 {
-    public string $label = 'Tâches';
+    public string $label = 'Tasks';
     public array $listItems = [
-        ['icon' => 'verify', 'label' => 'Vérifier le site'],
-        ['icon' => 'reinitialise', 'label' => 'Réinitialiser le mot de passe'],
-        ['icon' => 'save', 'label' => 'Sauvegarder le site'],
-        ['icon' => 'view-saves', 'label' => 'Voir toutes les sauvegardes'],
-        ['icon' => 'empty-cache', 'label' => 'Vider les caches'],
+        ['icon' => 'verify', 'label' => 'Site verify'],
+        ['icon' => 'reinitialise', 'label' => 'Reset password'],
+        ['icon' => 'save', 'label' => 'Backup site'],
+        ['icon' => 'view-saves', 'label' => 'View backups'],
+        ['icon' => 'empty-cache', 'label' => 'Clear caches'],
     ];
     
 }

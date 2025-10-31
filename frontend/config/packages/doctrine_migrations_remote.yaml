@@ -1,0 +1,7 @@
+# doctrine_migrations_remote:
+#     migrations_paths:
+#         # namespace is arbitrary but should be different from App\Migrations
+#         # as migrations classes should NOT be autoloaded
+#         'DoctrineMigrationsRemote': '%kernel.project_dir%/migrationsRemote'
+#     enable_profiler: false
+#     em: remote

@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Plateformes{% endblock %}
+{% block title %}Platforms{% endblock %}
 
 {% block hero %}
-    <twig:Molecules:Hero label="Toutes les plateformes" buttonText="Ajouter une plateforme" buttonUrl="{{path('app_new_platform')}}" />
+    <twig:Molecules:Hero label="Platforms" buttonText="New platform" buttonUrl="{{path('app_new_platform')}}" />
 {% endblock %}
 
 {% block body %}
@@ -19,14 +19,14 @@
         } 
     }" >
         <twig:Utils:Section :withGrid="false">
-            {% set count = tablesCells|length ~ " plateformes" %}
+            {% set count = tablesCells|length ~ " platforms" %}
             <twig:Atoms:RichText headline="{{ count }}" headlineTag="h3" />
             <div class="mt-8 md:mt-10">
                 <twig:Atoms:Table :tableCells="tablesCells" />
             </div>
         </twig:Utils:Section>
         {% set selectOptions = [
-            {'label' : 'vérifier les plateformes', 'action_url': 'verify_platforms'}
+            {'label' : 'Verify platforms', 'action_url': 'verify_platforms'}
         ] %}
         <twig:Molecules:LaunchTask selectUrl="selectUrl()" :optionsArray="selectOptions" />
     </div>

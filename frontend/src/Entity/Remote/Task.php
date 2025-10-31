@@ -80,7 +80,7 @@ class Task
 
     public function getCreatedAtFormatted(): string
     {
-        $formatted = $this->created_at->format('Y-m-d H:i:s');
+        $formatted = $this->created_at->format('m/d/Y - H:i:s');
         if (empty($formatted)) {
             $formatted = '-';
         }
@@ -101,7 +101,7 @@ class Task
 
     public function getStartedAtFormatted(): string
     {
-        $formatted = $this->started_at->format('Y-m-d H:i:s');
+        $formatted = $this->started_at->format('m/d/Y - H:i:s');
         if (empty($formatted)) {
             $formatted = '-';
         }
@@ -122,7 +122,7 @@ class Task
 
     public function getEndedAtFormatted(): string
     {
-        $formatted = $this->ended_at->format('Y-m-d H:i:s');
+        $formatted = $this->ended_at->format('m/d/Y - H:i:s');
         if (empty($formatted)) {
             $formatted = '-';
         }

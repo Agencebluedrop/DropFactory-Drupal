@@ -34,7 +34,7 @@ class TaskBuffer
 
     public function getCreatedAtFormatted(): string
     {
-        $formatted = $this->created_at->format('Y-m-d H:i:s');
+        $formatted = $this->created_at->format('m/d/Y - H:i:s');
         if (empty($formatted)) {
             $formatted = '-';
         }

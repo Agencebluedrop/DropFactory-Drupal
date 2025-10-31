@@ -1,8 +1,8 @@
 {% set classes = 'header bg-white lg:bg-brand-primary p-6 lg:px-16 lg:py-10 flex items-center justify-between lg:border-b-0 border-b-2 border-brand-secondary' %}
 {% set menuItems = [
-    { 'label': 'Plateformes', 'url': path('app_platforms') },
+    { 'label': 'Platforms', 'url': path('app_platforms') },
     { 'label': 'Sites', 'url': path('app_sites') },
-    { 'label': 'Tâches', 'url': path('app_tasks') },
+    { 'label': 'Tasks', 'url': path('app_tasks') },
     { 'label': 'Administration', 'url': path('app_admin') },
 ]  %}
 
@@ -17,9 +17,9 @@
         {# <twig:Atoms:Button label="help" icon="help" buttonIcon="true" /> #}
         <div class="lg:block hidden">
             {% if app.user %}
-                <twig:Atoms:Button label="Mon compte" url="{{ path('app_profile') }}" icon="user" variant="tertiary" />
+                <twig:Atoms:Button label="My account" url="{{ path('app_profile') }}" icon="user" variant="tertiary" />
             {% else %}
-                <twig:Atoms:Button label="Connexion" url="{{ path('app_login') }}" icon="user" variant="tertiary" />
+                <twig:Atoms:Button label="Login" url="{{ path('app_login') }}" icon="user" variant="tertiary" />
             {% endif %}
         </div>
     	<div class="lg:hidden flex items-center gap-4">

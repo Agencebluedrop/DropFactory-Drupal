@@ -35,7 +35,7 @@ class FactoryController extends AbstractController
             
             if ($platform->getStatus() === Platform::STATUS_ENABLED) {
                 $availableTasks[] = [
-                    'label' => 'Vérifier la plateforme', // 'PLATFORM_VERIFY',
+                    'label' => 'Verify platform', // 'PLATFORM_VERIFY',
                     'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
                     'icon' => 'verify'
                 ];
@@ -45,13 +45,13 @@ class FactoryController extends AbstractController
                     'icon' => 'pull'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Désactiver la plateforme', // 'PLATFORM_DISABLE',
+                    'label' => 'Disable platform', // 'PLATFORM_DISABLE',
                     'url' => '/new_task/PLATFORM_DISABLE/' . $platform->getId(),
                     'icon' => 'desactivate'
                 ];
             } else {
                 $availableTasks[] = [
-                    'label' => 'Activer la plateforme', // 'PLATFORM_ENABLE',
+                    'label' => 'Enable plateform', // 'PLATFORM_ENABLE',
                     'url' => '/new_task/PLATFORM_ENABLE/' . $platform->getId(),
                     'icon' => 'empty-cache'
                 ];
@@ -141,22 +141,22 @@ class FactoryController extends AbstractController
 
             if ($site->getStatus() === Site::STATUS_ENABLED) {
                 $availableTasks[] = [
-                    'label' => 'Vérifier le site', // 'SITE_VERIFY',
+                    'label' => 'Verify site', // 'SITE_VERIFY',
                     'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
                     'icon' => 'verify'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Vider le cache Drupal', // 'SITE_CLEAR_CACHE',
+                    'label' => 'Clear Drupal cache', // 'SITE_CLEAR_CACHE',
                     'url' => '/new_task/SITE_CLEAR_CACHE/' . $site->getId(),
                     'icon' => 'empty-cache'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Exécuter le Cron', // 'SITE_RUN_CRON',
+                    'label' => 'Run cron', // 'SITE_RUN_CRON',
                     'url' => '/new_task/SITE_RUN_CRON/' . $site->getId(),
                     'icon' => 'cron'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Mettre à jour la base de données', // 'SITE_DB_UPDATES',
+                    'label' => 'Database updates', // 'SITE_DB_UPDATES',
                     'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
                     'icon' => 'update'
                 ];
@@ -166,7 +166,7 @@ class FactoryController extends AbstractController
                     'icon' => 'backup'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Cloner', // 'SITE_CLONE',
+                    'label' => 'Clone', // 'SITE_CLONE',
                     'url' => '/new_task/SITE_CLONE/' . $site->getId(),
                     'icon' => 'clone'
                 ];
@@ -176,18 +176,18 @@ class FactoryController extends AbstractController
                     'icon' => 'reinitialise'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Désactiver le site', // 'SITE_DISABLE',
+                    'label' => 'Disable', // 'SITE_DISABLE',
                     'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
                     'icon' => 'desactivate'
                 ];
             } else {
                 $availableTasks[] = [
-                    'label' => 'Activer le site', // 'SITE_ENABLE',
+                    'label' => 'Enable', // 'SITE_ENABLE',
                     'url' => '/new_task/SITE_ENABLE/' . $site->getId(),
                     'icon' => 'activate'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Supprimer le site', // 'SITE_DELETE',
+                    'label' => 'Delete', // 'SITE_DELETE',
                     'url' => '/new_task/SITE_DELETE/' . $site->getId(),
                     'icon' => 'trash'
                 ];

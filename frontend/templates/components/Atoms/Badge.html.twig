@@ -4,5 +4,5 @@
 ] %}
 {% set classesString = badgeClasses | filter(v => v != '') | join(' ') %}
 <span{{ attributes.defaults({class: classesString}) }} x-init="online= {{ online|json_encode  }}">
-    {{ online ? 'en ligne' : 'désactivé'}}
+    {{ online ? 'online' : 'disabled'}}
 </span>

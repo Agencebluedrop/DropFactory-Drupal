@@ -5,16 +5,16 @@
             <twig:Atoms:Logo logo="evolix-logo" url="https://meet.evolix.org/" />
         </div>
         {% set menuItems = [
-                { 'label': 'Plateformes', 'url': path('app_platforms') },
+                { 'label': 'Platforms', 'url': path('app_platforms') },
                 { 'label': 'Sites', 'url': path('app_sites') },
-                { 'label': 'Tâches', 'url': path('app_tasks') },
+                { 'label': 'Tasks', 'url': path('app_tasks') },
                 { 'label': 'Administration', 'url': path('app_admin') },
-                { 'label': 'Mon compte', 'url': path('app_profile') },
+                { 'label': 'My account', 'url': path('app_profile') },
             ]  %}
          <twig:Molecules:Menu menuItems="{{menuItems}}" :withUnderline="true" />
     </div>
     <div class="bg-secondary-1000 text-center text-white p-6 md:py-8 md:px-[116px] text-sm leading-6">
-        © 2025 — Tous droits réservés — 
-        <twig:Atoms:Link label="Mentions Légales" url="{{ path('app_legal_notices') }}" linkClasses="!font-normal !bg-[length:100%_1px]" />
+        © 2025 — All rights reserved — 
+        <twig:Atoms:Link label="Legal notices" url="{{ path('app_legal_notices') }}" linkClasses="!font-normal !bg-[length:100%_1px]" />
     </div>
 </footer>

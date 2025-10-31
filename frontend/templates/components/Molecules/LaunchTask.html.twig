@@ -2,7 +2,7 @@
     <twig:Utils:Section :withGrid="false" containerClasses="border-t-2 border-brand-secondary !pt-10">
         <div {{ attributes.defaults({class: 'flex items-center justify-center gap-4 flex-wrap'}) }}>
             <twig:Atoms:Select selectId="tasks" :options="optionsArray" />
-            <twig:Atoms:Button label="Lancer la tâche" icon="arrow-right" alpineUrl="{{ selectUrl }}" />
+            <twig:Atoms:Button label="Launch task" icon="arrow-right" alpineUrl="{{ selectUrl }}" />
             {# {% set toggleButton %}
                 <twig:Atoms:Button label="Lancer la tâche" icon="arrow-right"  clickEvent="modelOpen = !modelOpen" />
             {% endset %}
