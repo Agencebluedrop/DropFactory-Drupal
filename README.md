@@ -12,6 +12,7 @@ DropFactory is presented as a free and open-source solution. As the initiators o
 **Contact Information**
 The DropFactory project is the result of a collaboration between two partners actively involved in open source communities:
 >bluedrop.fr SAS - https://bluedrop.fr
+>
 >Evolix SARL - https://evolix.com
 
 ## Install
