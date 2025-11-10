@@ -16,7 +16,9 @@ The DropFactory project is the result of a collaboration between two partners ac
 >https://bluedrop.fr
 
 >Evolix SARL
+
 >Registered with the Marseille Trade Register under number 451 952 295.
+
 >https://evolix.com
 
 ## Install
