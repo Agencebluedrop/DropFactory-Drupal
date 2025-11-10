@@ -11,15 +11,8 @@ DropFactory is presented as a free and open-source solution. As the initiators o
 
 **Contact Information**
 The DropFactory project is the result of a collaboration between two partners actively involved in open source communities:
->bluedrop.fr SAS
->Registered with the Marseille Trade Register, with its headquarters located at 18/20 avenue Robert Schuman, Marseille.
->https://bluedrop.fr
-
->Evolix SARL
-
->Registered with the Marseille Trade Register under number 451 952 295.
-
->https://evolix.com
+>bluedrop.fr SAS - https://bluedrop.fr
+>Evolix SARL - https://evolix.com
 
 ## Install
 
