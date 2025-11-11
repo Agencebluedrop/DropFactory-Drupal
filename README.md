@@ -2,7 +2,7 @@
 
 Dropfactory is a solution designed to simplify the deployment and management of multiple Drupal websites. It provides a unique and intuitive interface that allows you to manage your entire portfolio of sites without any coding required. This centralized approach enables teams to focus on content creation and user experience, rather than the technical complexities of managing multiple Drupal installations.
 
-**Project Objective: DropFactory**
+**Project Objective**
 
 The DropFactory project aims to provide Drupal users with an installation and administration console for low-code site factories. Inspired by the Aegir Hosting System, which we previously used, this project seeks to offer a similarly streamlined experience.
 It was born from the collaboration between a team specializing in the Drupal CMS and a team with expertise in hosting and managing open-source solutions.
@@ -16,7 +16,7 @@ The DropFactory project is the result of a collaboration between two partners ac
 >
 >Evolix SARL - https://evolix.com
 
-![header dropfactory](https://www.bluedrop.fr/sites/default/files/2025-11/accueil-cartes.png "header DropFactory")
+![header dropfactory](https://www.bluedrop.fr/sites/default/files/2025-11/accueil-cartes.svg "header DropFactory")
 
 ## Install
 
