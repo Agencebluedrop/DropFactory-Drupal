@@ -15,6 +15,8 @@ The DropFactory project is the result of a collaboration between two partners ac
 >
 >Evolix SARL - https://evolix.com
 
+![header dropfactory](https://www.bluedrop.fr/sites/default/files/2025-11/accueil-cartes.png "header DropFactory")
+
 ## Install
 
 On a brand new Debian 12 system.
