@@ -14,8 +14,6 @@ Requirements :
 * ansible (`apt install ansible`)
 
 
-
-
 System settings :
 
 ~~~
@@ -75,15 +73,11 @@ $ wget/gunzip TODO
 $ wget/gunzip TODO
 ~~~
 
-Create the databases, their users & inject them :
+Create the databases & their users :
 
 ~~~
 # mysqladmin create dropfactory_backend
 # mysqladmin create dropfactory_frontend
-
-# gunzip < ~dropfactory_frontend/dropfactory_frontend/databases/symfony.gz | mysql -o dropfactory_frontend 
-# gunzip < ~dropfactory_frontend/dropfactory_frontend/databases/remote.gz | mysql -o dropfactory_backend
-
 
 # mysql
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON dropfactory_backend.* TO 'dropfactory_backend'@'localhost' IDENTIFIED BY 'PASSWORD';
@@ -96,6 +90,7 @@ MariaDB [(none)]> GRANT INSERT on dropfactory_backend.TaskBuffer TO 'dropfactory
 Configure the DropFactory (SQL Credentials, SSH Keys...) :
 
 ~~~
+### Frontend : Config, vendor install & db migration
 # su - dropfactory_frontend
 $ cd dropfactory_frontend
 $ cp -a .env .env.local
@@ -103,9 +98,13 @@ $ vim .env.local
 
 $ composer install
 $ php bin/console tailwind:build
+$ php bin/console importmap:install
+$ php bin/console doctrine:migrations:migrate
 
 
 $ ^D
+
+### Backend : Config, ssh key gen
 # su - dropfactory_backend
 $ cd dropfactory_backend
 $ cp -a conf/config.ini.example conf/config.ini
@@ -114,7 +113,7 @@ $ vim conf/config.ini
 $ cp -a ansible/vars/main.yml.example ansible/vars/main.yml
 $ vim ansible/vars/main.yml
 
-## This key will be your "pull/deploy" key. 
+## This key will be your "pull/deploy" for the projects you create (ie: you'll give it read rights on your project repositories)
 $ ssh-keygen -t ed25519 -f dropfactory_backend/conf/deploy_key.ed25519
 ~~~
 
@@ -122,7 +121,7 @@ $ ssh-keygen -t ed25519 -f dropfactory_backend/conf/deploy_key.ed25519
 Nginx vhost :
 
 ~~~
-# cat << UNILIKELY_EOF > /etc/nginx/sites-available/dropfactory_frontend
+# cat /etc/nginx/sites-available/dropfactory_frontend
 
 upstream php_dropfactory {
         server unix:/home/dropfactory_frontend/php8.2-fpm.sock;
@@ -249,7 +248,6 @@ server {
     }
 }
 
-UNILIKELY_EOF
 
 
 # ln -s /etc/nginx/sites-available/dropfactory_frontend.conf /etc/nginx/sites-enabled/
