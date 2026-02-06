@@ -11,6 +11,7 @@ Requirements :
 * Nginx
 * MariaDB
 * PHP-FPM
+* NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
 
 
