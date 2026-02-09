@@ -10,7 +10,7 @@ Requirements :
 * GNU/Linux Debian 12 (Bookworm) system dedicated to DropFactory
 * Nginx
 * MariaDB
-* PHP-FPM
+* PHP-FPM 8.4 (from deb.sury.org)
 * NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
 
@@ -125,7 +125,7 @@ Nginx vhost :
 # cat /etc/nginx/sites-available/dropfactory_frontend
 
 upstream php_dropfactory {
-        server unix:/home/dropfactory_frontend/php8.2-fpm.sock;
+        server unix:/home/dropfactory_frontend/php-fpm.sock;
 }
 
 server {
@@ -260,13 +260,13 @@ server {
 PHP-FPM : 
 
 ~~~
-# cat << UNILIKELY_EOF > /etc/php/8.2/fpm/pool.d/dropfactory_frontend.conf
+# cat << UNILIKELY_EOF > /etc/php/8.4/fpm/pool.d/dropfactory_frontend.conf
 [dropfactory_frontend]
 user = dropfactory_frontend
 group = dropfactory_frontend
 
 
-listen = /home/dropfactory_frontend/php8.2-fpm.sock
+listen = /home/dropfactory_frontend/php-fpm.sock
 listen.owner = dropfactory_frontend
 listen.group = www-data
 
@@ -278,7 +278,7 @@ pm.max_requests = 1000
 
 UNILIKELY_EOF
 
-# php-fpm8.2 -t
-# systemctl reload php8.2-fpm
+# php-fpm8.4 -t
+# systemctl reload php8.4-fpm
 ~~~
 

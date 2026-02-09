@@ -1,10 +1,10 @@
 ---
 
-- name: Deploy PHP-FPM 8.2 pool
+- name: Deploy PHP-FPM 8.4 pool
   ansible.builtin.template:
-    src: "php_82.j2"
-    dest: '/etc/php/8.2/fpm/pool.d/{{ dropfactory_platform_unix_user }}.conf'
+    src: "php_84.j2"
+    dest: '/etc/php/8.4/fpm/pool.d/{{ dropfactory_platform_unix_user }}.conf'
     mode: "0640"
-  notify: Reload php8.2-fpm
+  notify: Reload php8.4-fpm
   tags:
     - php_pool
