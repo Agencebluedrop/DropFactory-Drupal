@@ -1,5 +1,22 @@
 # DropFactory
 
+Dropfactory is a solution designed to simplify the deployment and management of multiple Drupal websites. It provides a unique and intuitive interface that allows you to manage your entire portfolio of sites without any coding required. This centralized approach enables teams to focus on content creation and user experience, rather than the technical complexities of managing multiple Drupal installations.
+
+**Project Objective**
+
+The DropFactory project aims to provide Drupal users with an installation and administration console for low-code site factories. Inspired by the Aegir Hosting System, which we previously used, this project seeks to offer a similarly streamlined experience.
+It was born from the collaboration between a team specializing in the Drupal CMS and a team with expertise in hosting and managing open-source solutions.
+
+DropFactory is presented as a free and open-source solution. As the initiators of its first release, we invite our partners, friends, and Drupal users to get involved in its development and maintenance. We are recruiting both users and testers. Feel free to participate, contact us, or submit issues on this repository.
+
+**Contact Information**
+
+The DropFactory project is the result of a collaboration between two partners actively involved in open source communities:
+>bluedrop.fr SAS - https://bluedrop.fr
+>
+>Evolix SARL - https://evolix.com
+
+![header dropfactory](https://www.bluedrop.fr/sites/default/files/2025-11/accueil-cartes.svg "header DropFactory")
 
 ## Install
 
@@ -10,7 +27,8 @@ Requirements :
 * GNU/Linux Debian 12 (Bookworm) system dedicated to DropFactory
 * Nginx
 * MariaDB
-* PHP-FPM
+* PHP-FPM 8.4 (from deb.sury.org)
+* NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
 
 
@@ -124,7 +142,7 @@ Nginx vhost :
 # cat /etc/nginx/sites-available/dropfactory_frontend
 
 upstream php_dropfactory {
-        server unix:/home/dropfactory_frontend/php8.2-fpm.sock;
+        server unix:/home/dropfactory_frontend/php-fpm.sock;
 }
 
 server {
@@ -259,13 +277,13 @@ server {
 PHP-FPM : 
 
 ~~~
-# cat << UNILIKELY_EOF > /etc/php/8.2/fpm/pool.d/dropfactory_frontend.conf
+# cat << UNILIKELY_EOF > /etc/php/8.4/fpm/pool.d/dropfactory_frontend.conf
 [dropfactory_frontend]
 user = dropfactory_frontend
 group = dropfactory_frontend
 
 
-listen = /home/dropfactory_frontend/php8.2-fpm.sock
+listen = /home/dropfactory_frontend/php-fpm.sock
 listen.owner = dropfactory_frontend
 listen.group = www-data
 
@@ -277,7 +295,6 @@ pm.max_requests = 1000
 
 UNILIKELY_EOF
 
-# php-fpm8.2 -t
-# systemctl reload php8.2-fpm
+# php-fpm8.4 -t
+# systemctl reload php8.4-fpm
 ~~~
-
