@@ -1,6 +1,7 @@
 ---
 - name: Create database "{{ dropfactory_site_db }}"
   community.mysql.mysql_db:
+    login_host: "{{ dropfactory_site_database_host }}"
     name: "{{ dropfactory_site_db }}"
     state: present
   tags:
@@ -15,9 +16,10 @@
 
 - name: Create MySQL user "{{ dropfactory_site_db }}"
   community.mysql.mysql_user:
+    login_host: "{{ dropfactory_site_database_host }}"
     name: "{{ dropfactory_site_db }}"
-    password: '{{ dropfactory_site_db_password.stdout }}'
-    host: "localhost"
+    password: "{{ dropfactory_site_db_password.stdout }}"
+    host: "%"
     priv: "{{ dropfactory_site_db }}.*:ALL"
     update_password: on_create
     state: present
@@ -32,6 +34,7 @@
     value: "{{ item.value }}"
     mode: '0600'
   with_items:
+    - {option: 'host', value: "{{ dropfactory_site_database_host }}"}
     - {option: 'login', value: "{{ dropfactory_site_db }}"}
     - {option: 'database', value: "{{ dropfactory_site_db }}"}
     - {option: 'password', value: "{{ dropfactory_site_db_password.stdout }}"}
