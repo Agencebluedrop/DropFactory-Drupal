@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Page not found" />
+{% endblock %}
+
+{% block body %}
+    {% set formContent %}
+        <twig:Molecules:FormContainer formTitle="This page does not exist">
+            <p class="text-neutral-600 text-base leading-relaxed">
+                The address may be wrong or the page may have been moved. Check the URL or return to the homepage.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-2">
+                <twig:Atoms:Button label="Back to home" url="{{ path('app_homepage') }}" />
+            </div>
+        </twig:Molecules:FormContainer>
+    {% endset %}
+    <twig:Utils:Section :gridItems="[formContent]" columns="1" columnsWidth="8" />
+{% endblock %}
