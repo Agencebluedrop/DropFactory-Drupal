@@ -11,6 +11,7 @@
 
 /databases/
 *.gz
+*.sql
 
 ###> symfony/asset-mapper ###
 /public/assets/
