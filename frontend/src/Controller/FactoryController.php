@@ -469,13 +469,10 @@ class FactoryController extends AbstractController
                 'startedAt' => $task->getStartedAtFormatted(),
                 'duration' => $duration,
                 'parameters' => $task->getParameters(),
+                'logs' => $task->getLogs(),
+                'results' => $task->getResults(),
             ]];
         }
-
-        // Sort $tasksData by createdAt DESC
-        usort($tasksData, function ($a, $b) {
-            return strtotime($b[0]['createdAt']) - strtotime($a[0]['createdAt']);
-        });
 
         return $this->render('factory/tasks.html.twig', [
             'tablesCells' => $tasksData,
