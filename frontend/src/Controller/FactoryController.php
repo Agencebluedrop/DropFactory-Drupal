@@ -368,11 +368,11 @@ class FactoryController extends AbstractController
         $remoteEntityManager = $doctrine->getManager('remote');
 
         /** @var Task[] $tasks */
-        $tasks = $remoteEntityManager->getRepository(Task::class)->findAll();
+        $tasks = $remoteEntityManager->getRepository(Task::class)->findBy([], ['id' => 'DESC']);
 
         // Load also tasks from the queue
         /** @var TaskBuffer[] $tasksQueued */
-        $tasksQueued = $remoteEntityManager->getRepository(TaskBuffer::class)->findAll();
+        $tasksQueued = $remoteEntityManager->getRepository(TaskBuffer::class)->findBy([], ['id' => 'DESC']);
 
         foreach ($tasksQueued as $task) {
             $taskAction = $task->getAction();
