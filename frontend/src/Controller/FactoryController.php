@@ -88,10 +88,35 @@ class FactoryController extends AbstractController
             return $this->redirectToRoute('app_platforms');
         }
 
+        $availableTasks = [];
 
+        if ($platform->getStatus() === Platform::STATUS_ENABLED) {
+            $availableTasks[] = [
+                'label' => 'Verify platform', // 'PLATFORM_VERIFY',
+                'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
+                'icon' => 'verify'
+            ];
+            $availableTasks[] = [
+                'label' => 'Git pull', // 'PLATFORM_PULL',
+                'url' => '/new_task/PLATFORM_PULL/' . $platform->getId(),
+                'icon' => 'pull'
+            ];
+            $availableTasks[] = [
+                'label' => 'Disable platform', // 'PLATFORM_DISABLE',
+                'url' => '/new_task/PLATFORM_DISABLE/' . $platform->getId(),
+                'icon' => 'desactivate'
+            ];
+        } else {
+            $availableTasks[] = [
+                'label' => 'Enable plateform', // 'PLATFORM_ENABLE',
+                'url' => '/new_task/PLATFORM_ENABLE/' . $platform->getId(),
+                'icon' => 'empty-cache'
+            ];
+        }
 
         return $this->render('factory/platform.html.twig', [
             'platform' => $platform,
+            'availableTasks' => $availableTasks,
         ]);
     }
 
