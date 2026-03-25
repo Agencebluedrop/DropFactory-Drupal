@@ -41,22 +41,40 @@
                                     </td>
                                 {% endif %}
 
-                                {% if cell.parameters is defined and cell.parameters is not empty %}
+                                {% if cell.parameters is defined and cell.parameters is not empty
+                                    or cell.logs is defined and cell.logs is not empty
+                                %}
                                     <td class="py-6 px-2">
                                         {% set toggleButton %}
                                             <twig:Atoms:Button label="info" icon="info-icon" buttonIcon="true" iconSize="large" clickEvent="modelOpen = !modelOpen" />
                                         {% endset %}
+
                                         {% set text %}
                                             <div class="space-y-4">
-                                                {% for key, info in cell.parameters %}
-                                                <span class="block">
-                                                    <span class="font-bold">{{ key }} : </span> 
-                                                    {{ info }}
-                                                </span>
-                                                {% endfor %}
+                                                {% if cell.results is defined and cell.results is not empty %}
+                                                    <twig:Atoms:ButtonExternal label="Reset password" url="{{ cell.results.password_reset_url }}" :underline="false" linkClasses="z-10 relative !text-black" />
+                                                {% endif %}
+                            
+                                                {% if cell.parameters is defined and cell.parameters is not empty %}
+                                                    {% for key, info in cell.parameters %}
+                                                    <span class="block">
+                                                        <span class="font-bold">{{ key }} : </span> 
+                                                        {{ info }}
+                                                    </span>
+                                                    {% endfor %}
+                                                {% endif %}
+
+                                                {% if cell.logs is defined and cell.logs is not empty %}
+                                                    <div>
+                                                        <span class="font-bold">logs : </span> 
+                                                        <div>{{ cell.logs }}</div>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         {% endset %}
+
                                         <twig:Molecules:Modal :toggleButton="toggleButton" :modalText="text"/>
+
                                     </td>
                                 {% endif %}
 
@@ -74,11 +92,13 @@
 
                                 {% if cell.resourceName is defined and cell.resourcePath is not empty %}
                                     <td class="py-6 px-2">
+
                                         {% if cell.resourcePath != '#' %}
                                             <twig:Atoms:Link label="{{ cell.resourceName}}" url="{{ cell.resourcePath }}" :underline="false" linkClasses="z-10 relative !text-black" />
                                         {% else %}
                                             <twig:Atoms:RichText text="{{ cell.resourceName }}" />
                                         {% endif %}
+                                        
                                     </td>
                                 {% endif %}
                                 {% if cell.platformSites is defined %}
