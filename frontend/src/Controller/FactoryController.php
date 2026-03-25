@@ -423,6 +423,8 @@ class FactoryController extends AbstractController
                 'startedAt' => '-',
                 'duration' => '-',
                 'parameters' => $task->getParameters(),
+                'logs' => [],
+                'results' => [],
             ]];
         }
 
