@@ -265,8 +265,65 @@ class FactoryController extends AbstractController
             return $this->redirectToRoute('app_sites');
         }
 
+        $availableTasks = [];
+
+        if ($site->getStatus() === Site::STATUS_ENABLED) {
+            $availableTasks[] = [
+                'label' => 'Verify site', // 'SITE_VERIFY',
+                'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
+                'icon' => 'verify'
+            ];
+            $availableTasks[] = [
+                'label' => 'Clear Drupal cache', // 'SITE_CLEAR_CACHE',
+                'url' => '/new_task/SITE_CLEAR_CACHE/' . $site->getId(),
+                'icon' => 'empty-cache'
+            ];
+            $availableTasks[] = [
+                'label' => 'Run cron', // 'SITE_RUN_CRON',
+                'url' => '/new_task/SITE_RUN_CRON/' . $site->getId(),
+                'icon' => 'cron'
+            ];
+            $availableTasks[] = [
+                'label' => 'Database updates', // 'SITE_DB_UPDATES',
+                'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
+                'icon' => 'update'
+            ];
+            $availableTasks[] = [
+                'label' => 'Backup', // 'SITE_BACKUP',
+                'url' => '/new_task/SITE_BACKUP/' . $site->getId(),
+                'icon' => 'backup'
+            ];
+            $availableTasks[] = [
+                'label' => 'Clone', // 'SITE_CLONE',
+                'url' => '/new_task/SITE_CLONE/' . $site->getId(),
+                'icon' => 'clone'
+            ];
+            $availableTasks[] = [
+                'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
+                'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
+                'icon' => 'reinitialise'
+            ];
+            $availableTasks[] = [
+                'label' => 'Disable', // 'SITE_DISABLE',
+                'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
+                'icon' => 'desactivate'
+            ];
+        } else {
+            $availableTasks[] = [
+                'label' => 'Enable', // 'SITE_ENABLE',
+                'url' => '/new_task/SITE_ENABLE/' . $site->getId(),
+                'icon' => 'activate'
+            ];
+            $availableTasks[] = [
+                'label' => 'Delete', // 'SITE_DELETE',
+                'url' => '/new_task/SITE_DELETE/' . $site->getId(),
+                'icon' => 'trash'
+            ];
+        }
+
         return $this->render('factory/site.html.twig', [
             'site' => $site,
+            'availableTasks' => $availableTasks,
         ]);
     }
 
