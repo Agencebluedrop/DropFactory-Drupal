@@ -96,12 +96,29 @@ class Task
 
     public function getStartedAt(): ?\DateTimeInterface
     {
-        return $this->started_at;
+        if ($this->started_at === null) {
+            return null;
+        }
+
+        $paris = new \DateTimeZone('Europe/Paris');
+
+        if ($this->started_at instanceof \DateTimeImmutable) {
+            return $this->started_at->setTimezone($paris);
+        }
+
+        $dt = \DateTime::createFromInterface($this->started_at);
+        $dt->setTimezone($paris);
+
+        return $dt;
     }
 
     public function getStartedAtFormatted(): string
     {
-        $formatted = $this->started_at->format('m/d/Y - H:i:s');
+        $started = $this->getStartedAt();
+        if ($started === null) {
+            return '-';
+        }
+        $formatted = $started->format('m/d/Y - H:i:s');
         if (empty($formatted)) {
             $formatted = '-';
         }
@@ -117,7 +134,20 @@ class Task
 
     public function getEndedAt(): ?\DateTimeInterface
     {
-        return $this->ended_at;
+        if ($this->ended_at === null) {
+            return null;
+        }
+
+        $paris = new \DateTimeZone('Europe/Paris');
+
+        if ($this->ended_at instanceof \DateTimeImmutable) {
+            return $this->ended_at->setTimezone($paris);
+        }
+
+        $dt = \DateTime::createFromInterface($this->ended_at);
+        $dt->setTimezone($paris);
+
+        return $dt;
     }
 
     public function getEndedAtFormatted(): string
