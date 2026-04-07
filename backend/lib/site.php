@@ -215,6 +215,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_platform_user", "platform_".$this->site_platform_id);
         $this->ansible->add_var("dropfactory_site_id", $this->site_id);
         $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->add_var("dropfactory_site_profile_name", $this->get_profile_name());
         $this->ansible->add_var("dropfactory_site_db", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->run();
