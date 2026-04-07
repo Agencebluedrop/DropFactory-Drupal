@@ -300,8 +300,7 @@ class Platform
         }
 
         $command = sprintf(
-            "sudo -u %s find %s -maxdepth 2 -name '*.info.yml' 2>/dev/null",
-            $unix_user,
+            "find %s -maxdepth 2 -name '*.info.yml' 2>/dev/null",
             escapeshellarg($profiles_path)
         );
 
