@@ -225,7 +225,7 @@ class FactoryController extends AbstractController
                 'url' => $this->generateUrl('app_site', [
                     'id' => $site->getId(),
                 ]),
-                'siteUrl' => $site->getDomain(),
+                'siteUrl' => $site->getProtocol() . $site->getDomain(),
                 'installProfile' => $site->getInstallProfile()->getName(),
                 'availableTasks' => $availableTasks,
             ]];
@@ -237,7 +237,7 @@ class FactoryController extends AbstractController
                 'url' => $this->generateUrl('app_site', [
                     'id' => $site->getId(),
                 ]),
-                'siteUrl' => $site->getDomain(),
+                'siteUrl' => $site->getProtocol() . $site->getDomain(),
                 'image' => $site->getImage() ?? 'default.jpg',
                 'installProfile' => $site->getInstallProfile()->getName(),
                 'availableTasks' => $availableTasks,

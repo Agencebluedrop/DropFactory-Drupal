@@ -69,6 +69,11 @@ class Site
         return $this;
     }
 
+    public function getProtocol(): ?string
+    {
+        return "http://";
+    }
+
     public function getDomain(): ?string
     {
         return $this->domain;
