@@ -17,7 +17,7 @@
                 {# {{ form(form) }} #}
                 {{ form_start(form, { attr: { id: 'site_add_form' } }) }}
                     {{ form_row(form.name) }}
-                    {{ form_row(form.domain) }} 
+                    {{ form_row(form.domain) }}
                     {# {{ form_row(form.aliases) }} #}
                     <label for="aliases" class="block text-brand-secondary text-xs uppercase font-bold mb-2 mt-6"> Aliases</label>
                     <div class="tag-input-container px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full flex flex-wrap gap-2">
@@ -72,7 +72,7 @@
         if (e.key === 'Enter' && input.value.trim() !== '') {
             createTag(input.value.trim());
             input.value = '';
-            e.preventDefault(); 
+            e.preventDefault();
         }
         });
             const form = document.getElementById('site_add_form');
@@ -84,13 +84,12 @@
                     method: method,
                     body: data,
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        charset: 'utf-8'
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
 
-                const text = await req.text();
-                return text;
+                return await req.text();
             };
 
         const parseTextToHtml = (text) => {
@@ -98,13 +97,24 @@
             return parser.parseFromString(text, 'text/html');
         };
 
-        const changeOptions = async (e) => {
-            const requestBody = e.target.getAttribute('name') + '=' + e.target.value;
+        const changeOptions = async () => {
+            const formData = new FormData(form);
+            const requestBody = new URLSearchParams(formData);
 
-            const updateFormResponse = await updateForm(requestBody, form.getAttribute('action'), form.getAttribute('method'));
+            const updateFormResponse = await updateForm(
+                requestBody.toString(),
+                form.getAttribute('action'),
+                form.getAttribute('method')
+            );
+
             const html = parseTextToHtml(updateFormResponse);
-
             const new_form_select_install_profile = html.getElementById('site_install_profile');
+
+            if (!new_form_select_install_profile) {
+                console.error('site_install_profile not found in returned HTML');
+                console.log(updateFormResponse);
+                return;
+            }
 
             if (window.choicesInstances.has(form_select_install_profile)) {
                 window.choicesInstances.get(form_select_install_profile).destroy();
@@ -122,6 +132,7 @@
 
             window.choicesInstances.set(form_select_install_profile, newChoices);
         };
+
         form_select_platform.addEventListener('change', (e) => changeOptions(e));
     </script>
 {% endblock %}

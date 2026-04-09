@@ -215,6 +215,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_platform_user", "platform_".$this->site_platform_id);
         $this->ansible->add_var("dropfactory_site_id", $this->site_id);
         $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->add_var("dropfactory_site_profile_name", $this->get_profile_name());
         $this->ansible->add_var("dropfactory_site_db", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->run();
@@ -365,6 +366,32 @@ class Site
     function get_ansible_status() : bool
     {
         return $this->ansible->is_okay();
+    }
+
+    /** 
+     * Return the site's profile name
+     * 
+     * @return String the profile's name
+     */
+    function get_profile_name(): String
+    {
+        $query = 'SELECT `name` FROM `Profile`
+                  WHERE `id` = :install_profile_id AND `platform_id` = :platform_id';
+        $stmt = DB::$pdo->prepare($query);
+        $stmt->execute([
+            'install_profile_id' => $this->site_profile_id,
+            'platform_id'        => $this->site_platform_id,
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row === false) {
+            throw new InvalidArgumentException(
+                'Profile not found for install_profile_id '
+                . $this->site_profile_id . ' and platform_id ' . $this->site_platform_id
+            );
+        }
+
+        return $row['name'];
     }
 
     /** 

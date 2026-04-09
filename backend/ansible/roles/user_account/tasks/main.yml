@@ -16,6 +16,15 @@
   tags:
     - user_account
 
+- name: "Add dropfactory to group {{ dropfactory_platform_unix_user }}"
+  ansible.builtin.user:
+    name: 'dropfactory'
+    groups: "{{ dropfactory_platform_unix_user }}"
+    append: true
+  notify: Reload nginx
+  tags:
+    - user_account
+
 - name: "Create user {{ dropfactory_platform_unix_user }}"
   ansible.builtin.user:
     name: "{{ dropfactory_platform_unix_user }}"

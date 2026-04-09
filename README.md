@@ -20,16 +20,17 @@ The DropFactory project is the result of a collaboration between two partners ac
 
 ## Install
 
-On a brand new Debian 12 system.
+On a brand new Debian 12/13 system.
 
 Requirements : 
 
-* GNU/Linux Debian 12 (Bookworm) system dedicated to DropFactory
+* GNU/Linux Debian 12 (Bookworm) or 13 (Trixie) system dedicated to DropFactory
 * Nginx
 * MariaDB
-* PHP-FPM 8.4 (from deb.sury.org)
+* PHP-FPM 8.4 (from deb.sury.org on Debian 12 systems - Debian 13 runs with PHP8.4)
 * NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
+* certbot (`apt install certbot`)
 
 
 System settings :
@@ -48,21 +49,27 @@ System settings :
 Create UNIX accounts : 
 
 ~~~
-# adduser dropfactory_frontend
-# adduser dropfactory_backend
+# adduser --disabled-password dropfactory
+# adduser --disabled-password --gid $(id --group dropfactory)  www-dropfactory
 
-# adduser www-data dropfactory_frontend
+# adduser www-data dropfactory
 ~~~
 
-Ensure the backend user will be able to SSH as root localy : 
+> *Note*: Here, the complete Dropfactory system is deployed inside one UNIX account (with a separate one for PHP execution).
+> It's also possible to deploy to separate UNIX account the frontend and backend sides. Even on a different server as long as they both 
+> Use the same MySQL host
+
+
+
+Ensure the backend will be able to SSH as root localy : 
 
 ~~~
-# su - dropfactory_backend
+# su - dropfactory
 $ ssh-keygen -t ed25519
 $ ^D
 
-# cat ~dropfactory_backend/.ssh/id_ed25519.pub > .ssh/authorized_keys
-# cat << UNILIKELY_EOF > /etc/ssh/sshd_config.d/zzz-evolinux-custom.conf
+# cat ~dropfactory/.ssh/id_ed25519.pub >> .ssh/authorized_keys
+# cat << UNILIKELY_EOF >> /etc/ssh/sshd_config.d/zzz-evolinux-custom.conf
 
 Match User root Address 127.0.0.1,::1
     AllowGroups root
@@ -75,7 +82,7 @@ UNILIKELY_EOF
 # sshd -t
 # systemctl reload ssh
 
-# su - dropfactory_backend
+# su - dropfactory
 $ ssh root@localhost true
 $ if [[ $? -eq 0 ]]; then echo "SSH OK"; fi
 SSH OK
@@ -84,11 +91,8 @@ SSH OK
 Fetch the code :
 
 ~~~
-# su - dropfactory_backend
-$ wget/gunzip TODO
-
-# su - dropfactory_frontend
-$ wget/gunzip TODO
+# su - dropfactory
+$ git clone https://github.com/Agencebluedrop/DropFactory-Drupal.git dropfactory
 ~~~
 
 Create the databases & their users :
@@ -105,12 +109,15 @@ MariaDB [(none)]> GRANT SELECT on dropfactory_backend.* TO 'dropfactory_frontend
 MariaDB [(none)]> GRANT INSERT on dropfactory_backend.TaskBuffer TO 'dropfactory_frontend'@'localhost';
 ~~~
 
+> *Note*: Depending on your MariaDB version, the specific grants for dropfactory_frontend user on the table dropfactory_backend.TaskBuffer
+> may not work before creating the table in the database :'(
+
 Configure the DropFactory (SQL Credentials, SSH Keys...) :
 
 ~~~
 ### Frontend : Config, vendor install & db migration
-# su - dropfactory_frontend
-$ cd dropfactory_frontend
+# su - dropfactory
+$ cd dropfactory/frontend
 $ cp -a .env .env.local
 $ vim .env.local
 
@@ -123,8 +130,8 @@ $ php bin/console doctrine:migrations:migrate
 $ ^D
 
 ### Backend : Config, ssh key gen
-# su - dropfactory_backend
-$ cd dropfactory_backend
+# su - dropfactory
+$ cd dropfactory/backend
 $ cp -a conf/config.ini.example conf/config.ini
 $ vim conf/config.ini
 
@@ -132,26 +139,40 @@ $ cp -a ansible/vars/main.yml.example ansible/vars/main.yml
 $ vim ansible/vars/main.yml
 
 ## This key will be your "pull/deploy" for the projects you create (ie: you'll give it read rights on your project repositories)
-$ ssh-keygen -t ed25519 -f dropfactory_backend/conf/deploy_key.ed25519
+$ ssh-keygen -t ed25519 -f conf/deploy_key.ed25519
 ~~~
 
 
 Nginx vhost :
 
 ~~~
-# cat /etc/nginx/sites-available/dropfactory_frontend
+# cat /etc/nginx/sites-available/dropfactory.conf
 
 upstream php_dropfactory {
-        server unix:/home/dropfactory_frontend/php-fpm.sock;
+        server unix:/home/dropfactory/php-fpm.sock;
 }
 
 server {
     listen [::]:80;
     listen      80;
+    #listen [::]:443 ssl;
+    #listen      443 ssl;
+    #http2 on;
 
     server_name dropfactory-sandbox.evolix.eu;
 
-    root /home/dropfactory_frontend/dropfactory_frontend/public;
+    ## SSL
+    #include snippets/letsencrypt.conf;
+    #ssl_certificate /etc/letsencrypt/live/dropfactory/fullchain.pem;
+    #ssl_certificate_key /etc/letsencrypt/live/dropfactory/privkey.pem;
+
+    ## HTTP to HTTP
+    #if ($scheme = http) {
+    #        return 301 https://$host$request_uri;
+    #}
+
+
+    root /home/dropfactory/dropfactory/frontend/public;
     index index.htm index.html index.php;
 
     location = /favicon.ico {
@@ -266,25 +287,41 @@ server {
     }
 }
 
-
-
-# ln -s /etc/nginx/sites-available/dropfactory_frontend.conf /etc/nginx/sites-enabled/
+# ln -s /etc/nginx/sites-available/dropfactory.conf /etc/nginx/sites-enabled/
 # nginx -t 
 # systemctl reload nginx
 ~~~
+
+To enable SSL on the vhost, uncomment the `include snippets/letsencrypt.conf;` directive and add the following file : 
+
+~~~
+# cat /etc/nginx/snippets/letsencrypt.conf
+location ~ /.well-known/acme-challenge {
+    alias /var/lib/letsencrypt/;
+    try_files $uri =404;
+    auth_basic off;
+    allow all;
+}
+~~~
+
+~~~
+# certbot certonly --webroot --webroot-path /var/lib/letsencrypt/ -d dropfactory-sandbox.evolix.eu --cert-name dropfactory
+~~~
+
+You can now uncomment the rest of the SSL related directives & the listen on port 443 (HTTPS)
 
 
 PHP-FPM : 
 
 ~~~
-# cat << UNILIKELY_EOF > /etc/php/8.4/fpm/pool.d/dropfactory_frontend.conf
-[dropfactory_frontend]
-user = dropfactory_frontend
-group = dropfactory_frontend
+# cat << UNILIKELY_EOF > /etc/php/8.4/fpm/pool.d/dropfactory.conf
+[dropfactory]
+user = www-dropfactory
+group = dropfactory
 
 
-listen = /home/dropfactory_frontend/php-fpm.sock
-listen.owner = dropfactory_frontend
+listen = /home/dropfactory/php-fpm.sock
+listen.owner = dropfactory
 listen.group = www-data
 
 pm = ondemand
@@ -297,4 +334,28 @@ UNILIKELY_EOF
 
 # php-fpm8.4 -t
 # systemctl reload php8.4-fpm
+~~~
+
+Enable the backend crontab to treat jobs :
+
+~~~
+# touch /var/log/dropfactory_output.log
+# chown dropfactory:adm /var/log/dropfactory_output.log
+
+# cat /etc/logrotate.d/dropfactory
+/var/log/dropfactory_output.log {
+        daily
+        missingok
+        rotate 365
+        compress
+        delaycompress
+        notifempty
+        create 0640 dropfactory adm
+}
+
+
+# su - dropfactory
+
+$ crontab -e
+*/5 *  *   *   *     cd /home/dropfactory/dropfactory/backend/; date >> /var/log/dropfactory_output.log; php cron.php 2>&1 >> /var/log/dropfactory_output.log
 ~~~

@@ -71,7 +71,7 @@ class Site
 
     public function getDomain(): ?string
     {
-        return "https://" . $this->domain;
+        return $this->domain;
     }
 
     public function setDomain(string $domain): static

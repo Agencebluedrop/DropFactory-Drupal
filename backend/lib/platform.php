@@ -1,11 +1,11 @@
 <?php
 /**
  * Dropfactory Backend - Platform Class
- * 
+ *
  * Represents a drupal platform
- * 
+ *
  * PHP version 8
- * 
+ *
  * @author  Ludovic Poujol <lpoujol@evolix.fr>
  * @author  Gregory Colpart <reg@evolix.fr>
  * @author  Evolix <info@evolix.fr>
@@ -30,23 +30,23 @@ class Platform
         $this->platform_git_branch = $git_branch;
     }
 
-    /** 
+    /**
      * (Placeholder) Get a platform list (from database?)
      */
     static function list()
     {
-        
+
     }
 
-    /** 
+    /**
      * Find a platform by name and return it's internal database id
-     * 
+     *
      * @param  String platform_name The platform name
      * @return int|false The platform id or false if no platform was found
      */
     static function get_id_by_name(String $platform_name) : int | false
     {
-        $query = 'SELECT `id`, `name` FROM `Platform` 
+        $query = 'SELECT `id`, `name` FROM `Platform`
                   where `name` = :name';
 
         $stmt = DB::$pdo->prepare($query);
@@ -62,15 +62,15 @@ class Platform
 
     }
 
-    /** 
+    /**
      * Find a platform by id and return it's name
-     * 
+     *
      * @param  int platform_id The platform id
      * @return String|false The platform name or false if no platform was found
      */
     static function get_name_by_id(int $platform_id) : String | false
     {
-        $query = 'SELECT `id`, `name` FROM `Platform` 
+        $query = 'SELECT `id`, `name` FROM `Platform`
                   where `id` = :id';
 
         $stmt = DB::$pdo->prepare($query);
@@ -88,12 +88,12 @@ class Platform
 
     /**
      * Initialize a Platform Object with a database id
-     * 
+     *
      * @param Int platform_id The platform id in database
      */
     static function init_by_id(int $platform_id) : Platform
     {
-        $query = 'SELECT `id`, `name`, `gitRepositoryURL`, `gitRepositoryBranch` FROM `Platform` 
+        $query = 'SELECT `id`, `name`, `gitRepositoryURL`, `gitRepositoryBranch` FROM `Platform`
                   where `id` = :id';
         $stmt = DB::$pdo->prepare($query);
 
@@ -110,7 +110,7 @@ class Platform
 
     /**
      * Add a new platform (as a task)
-     * 
+     *
      * @param  String name Platform name (used as UNIX account)
      * @param  String git_url Git URL to pull the platform code
      * @param  String git_branch The git branch to use
@@ -119,7 +119,7 @@ class Platform
     static function task_add(String $name, String $git_url, String $git_branch) : Platform
     {
 
-        // TODO : Dirty placeholder. 
+        // TODO : Dirty placeholder.
         // Here a real check that a given platform does not exist before adding it
         $platform_id = Platform::get_id_by_name($name);
 
@@ -131,22 +131,24 @@ class Platform
         $platform = new Platform($name, $git_url, $git_branch);
         $platform->insert();
         $platform->create();
+        $platform->sync_profiles_v1();
         $platform->set_enabled();
-        
+
         return $platform;
     }
 
     /**
      * Add a new platform (as a task)
-     * 
+     *
      * @param Int name Platform id
      */
     static function task_pull(int $platform_id) : Platform
-    {       
+    {
         $platform = Platform::init_by_id($platform_id);
 
         $platform->pull();
-        
+        $platform->sync_profiles_v1();
+
         return $platform;
     }
 
@@ -155,15 +157,15 @@ class Platform
      */
     function update() : void
     {
-        $query = 'UPDATE `Platform` 
+        $query = 'UPDATE `Platform`
                   SET
                     status = :status
                 where id = :id';
-        
+
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
-            ['id' => $this->platform_id, 
+            ['id' => $this->platform_id,
             'status' => $this->platform_status]
         );
     }
@@ -173,14 +175,14 @@ class Platform
      */
     function insert() : void
     {
-        $query = 'INSERT INTO `Platform` 
-                (name, status, gitRepositoryURL, gitRepositoryBranch) 
+        $query = 'INSERT INTO `Platform`
+                (name, status, gitRepositoryURL, gitRepositoryBranch)
                 VALUES (:name, :status, :gitRepositoryURL, :gitRepositoryBranch)';
-        
+
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
-            ['name' => $this->platform_name, 
+            ['name' => $this->platform_name,
                         'status' => $this->platform_status,
                         'gitRepositoryURL' => $this->platform_git_url,
             'gitRepositoryBranch' => $this->platform_git_branch]
@@ -190,16 +192,18 @@ class Platform
 
 
         // Placeholder to meet db constrains
-        $query = 'INSERT INTO `Profile` 
-        (platform_id, name) 
-        VALUES (:platform_id, :name)';
 
-        $stmt = DB::$pdo->prepare($query);
+        // $query = 'INSERT INTO `Profile`
+        // (platform_id, name)
+        // VALUES (:platform_id, :name)';
 
-        $stmt->execute(
-            ['platform_id' => $this->platform_id, 
-            'name' => 'default']
-        );
+        // $stmt = DB::$pdo->prepare($query);
+
+        // $stmt->execute(
+        //     ['platform_id' => $this->platform_id,
+        //     'name' => 'default']
+        // );
+
     }
 
     /**
@@ -214,7 +218,7 @@ class Platform
         $this->ansible->add_var("dropfactory_platform_unix_user", $this->get_unix_user());
         $this->ansible->add_var("dropfactory_platform_git_url", $this->platform_git_url);
         $this->ansible->add_var("dropfactory_platform_git_branch", $this->platform_git_branch);
-        
+
         $this->ansible->run();
     }
 
@@ -231,7 +235,7 @@ class Platform
         $this->ansible->add_var("dropfactory_platform_unix_user", $this->get_unix_user());
         $this->ansible->add_var("dropfactory_platform_git_url", $this->platform_git_url);
         $this->ansible->add_var("dropfactory_platform_git_branch", $this->platform_git_branch);
-        
+
         $this->ansible->run();
     }
 
@@ -249,7 +253,7 @@ class Platform
 
     /**
      * Get logs from Ansible
-     * 
+     *
      * @return String Json encoded log output of Ansible
      */
     function get_logs() : String
@@ -259,7 +263,7 @@ class Platform
 
     /**
      * Check if ansible return code was 0 (ok) or not
-     * 
+     *
      * @return Bool : True if ansible exec returned 0, false otherwise
      */
     function get_ansible_status() : bool
@@ -267,9 +271,9 @@ class Platform
         return $this->ansible->is_okay();
     }
 
-    /** 
+    /**
      * Return the platform ID
-     * 
+     *
      * @return int the platform id
      */
     function get_id(): int
@@ -278,18 +282,91 @@ class Platform
     }
 
     /**
-     * 
+     *
      */
     function set_id(int $platform_id): void
     {
         $this->platform_id = $platform_id;
     }
 
+    private function detect_profiles_v1() : array
+    {
+        $profiles = [];
+        $unix_user = $this->get_unix_user();
+        $profiles_path = '/home/' . $unix_user . '/platform/web/profiles';
+
+        if (!is_dir($profiles_path)) {
+            return [];
+        }
+
+        $command = sprintf(
+            "find %s -maxdepth 2 -name '*.info.yml' 2>/dev/null",
+            escapeshellarg($profiles_path)
+        );
+
+        $output = shell_exec($command);
+
+        // file_put_contents('/tmp/dropfactory_profiles_debug.log',
+        //     "USER=" . $unix_user . PHP_EOL .
+        //     "PATH=" . $profiles_path . PHP_EOL .
+        //     "CMD=" . $command . PHP_EOL .
+        //     "OUTPUT=" . $output . PHP_EOL . "---" . PHP_EOL,
+        //     FILE_APPEND
+        // );
+
+        if (empty($output)) {
+            return [];
+        }
+
+        $lines = array_filter(array_map('trim', explode("\n", $output)));
+
+        foreach ($lines as $line) {
+            $profile_dir = basename(dirname($line));
+            if (!in_array($profile_dir, $profiles, true)) {
+                $profiles[] = $profile_dir;
+            }
+        }
+
+        sort($profiles);
+
+        return $profiles;
+    }
+
+    private function sync_profiles_v1() : void
+    {
+        // Profils Drupal core toujours proposés,
+        // ils ne sont pas dans le repo, ils sont ajoutés après avec composer.
+        $profiles = ['standard', 'minimal'];
+
+        foreach ($this->detect_profiles_v1() as $profile_name) {
+            if (!in_array($profile_name, $profiles, true)) {
+                $profiles[] = $profile_name;
+            }
+        }
+
+        foreach ($profiles as $profile_name) {
+            $query = 'SELECT id FROM `Profile` WHERE platform_id = :platform_id AND name = :name';
+            $stmt = DB::$pdo->prepare($query);
+            $stmt->execute([
+                'platform_id' => $this->platform_id,
+                'name' => $profile_name,
+            ]);
+
+            if ($stmt->rowCount() === 0) {
+                $insert = 'INSERT INTO `Profile` (platform_id, name) VALUES (:platform_id, :name)';
+                $insert_stmt = DB::$pdo->prepare($insert);
+                $insert_stmt->execute([
+                    'platform_id' => $this->platform_id,
+                    'name' => $profile_name,
+                ]);
+            }
+        }
+    }
 
     /**
      * Return the UNIX account name used for the platform
      */
-    function get_unix_user() : String 
+    function get_unix_user() : String
     {
         return "platform_".$this->platform_id;
     }

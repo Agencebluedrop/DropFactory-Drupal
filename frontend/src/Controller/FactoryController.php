@@ -32,7 +32,7 @@ class FactoryController extends AbstractController
 
         foreach ($platforms as $platform) {
             $availableTasks = [];
-            
+
             if ($platform->getStatus() === Platform::STATUS_ENABLED) {
                 $availableTasks[] = [
                     'label' => 'Verify platform', // 'PLATFORM_VERIFY',
@@ -337,6 +337,13 @@ class FactoryController extends AbstractController
         ]);
 
         $form->handleRequest($request);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('factory/site_add.html.twig', [
+                'form' => $form,
+            ]);
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             // $form->getData() holds the submitted values
             $site = $form->getData();
@@ -412,7 +419,7 @@ class FactoryController extends AbstractController
                     ]) : '#';
                 }
             }
-            
+
 
             $tasksData[] = [[
                 'status' => 'PENDING',
@@ -505,7 +512,7 @@ class FactoryController extends AbstractController
 
             $type = "Platform";
             $repo = $remoteEntityManager->getRepository(Platform::class);
-            
+
             if (strpos($ids[0], 'SITE') !== false) {
                 $type = "Site";
                 $repo = $remoteEntityManager->getRepository(Site::class);
