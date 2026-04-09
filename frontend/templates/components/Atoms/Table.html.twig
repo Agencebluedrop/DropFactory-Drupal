@@ -64,12 +64,20 @@
                                                     {% endfor %}
                                                 {% endif %}
 
+                                                {% if cell.results is defined and cell.results is not empty %}
+                                                    <div>
+                                                        <span class="font-bold">results : </span> 
+                                                        <div><pre>{{ cell.results|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></div>
+                                                    </div>
+                                                {% endif %}
+
                                                 {% if cell.logs is defined and cell.logs is not empty %}
                                                     <div>
                                                         <span class="font-bold">logs : </span> 
-                                                        <div>{{ cell.logs }}</div>
+                                                        <div><pre>{{ cell.logs|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></div>
                                                     </div>
                                                 {% endif %}
+
                                             </div>
                                         {% endset %}
 

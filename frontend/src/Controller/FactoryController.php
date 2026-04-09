@@ -467,6 +467,7 @@ class FactoryController extends AbstractController
                 ]) : '#';
             }
 
+
             $tasksData[] = [[
                 'status' => $task->getStatus(),
                 'taskLabel' => $taskLabel,
@@ -476,7 +477,7 @@ class FactoryController extends AbstractController
                 'startedAt' => $task->getStartedAtFormatted(),
                 'duration' => $duration,
                 'parameters' => $task->getParameters(),
-                'logs' => $task->getLogs(),
+                'logs' => json_decode($task->getLogs(), true),
                 'results' => $task->getResults(),
             ]];
         }
