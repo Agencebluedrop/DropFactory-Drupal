@@ -25,26 +25,34 @@
         ['Status', site.status],
         ['Domain aliases', domainAliases],
     ] %}
+    {% set contentArray = [] %}
     <twig:Utils:Section :withGrid="false">
+        {% set content_left %}
         <div class="space-y-10">
             <twig:Atoms:Table :tableCells="tableContentArray" :withCheckbox="false" :withTasks="false" />
-
-            <div>
-                <twig:Atoms:RichText headline="Available tasks" headlineTag="h3" />
-
-                <ul class="py-2 bg-gray-100 w-1/2">
-                    {% for item in availableTasks %}
-                        {% set buttonTag = item.url is defined and item.url is not empty ? 'a' : 'button' %}
-                        <li class="px-4 py-3 hover:bg-neutral-50 transition list-item">
-                            <{{buttonTag}} {% if item.url is defined and item.url is not empty %} href="{{ item.url }}" {% endif %}>
-                                <twig:Atoms:LabelIcon label="{{ item.label }}"  icon="{{ item.icon }}" />
-                            </{{buttonTag}}>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
         </div>
+        {% endset %}
+        {% set contentArray = contentArray|merge([content_left]) %}
+        {% if availableTasks is defined and availableTasks is not empty %}
+            {% set content_right %}
+                <div>
+                    <twig:Atoms:RichText headline="Available tasks" headlineTag="h3" />
 
+                    <ul class="py-2 bg-gray-100 w-full">
+                        {% for item in availableTasks %}
+                            {% set buttonTag = item.url is defined and item.url is not empty ? 'a' : 'button' %}
+                            <li class="px-4 py-3 hover:bg-neutral-50 transition list-item">
+                                <{{buttonTag}} {% if item.url is defined and item.url is not empty %} href="{{ item.url }}" {% endif %}>
+                                    <twig:Atoms:LabelIcon label="{{ item.label }}"  icon="{{ item.icon }}" />
+                                </{{buttonTag}}>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endset %}
+            {% set contentArray = contentArray|merge([content_right]) %}
+        {% endif %}
+        <twig:Utils:Grid :items="contentArray" columns='2' columnsWidth="9x3" />
     </twig:Utils:Section>
 
 {% endblock %}
