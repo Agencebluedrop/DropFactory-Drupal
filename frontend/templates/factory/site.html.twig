@@ -8,12 +8,12 @@
 
 {% block body %}
    {% set siteUrl %}
-        <a href="{{ site.domain }}" target="_blank">{{ site.domain }}</a>
+        <a href="{{ site.protocol ~ site.domain }}" target="_blank">{{ site.protocol ~ site.domain }}</a>
     {% endset %}
     {% set domainAliases %}
         <ul>
             {% for alias in site.aliases %}
-                <li>{{ alias.domain }}</li>
+                <li>{{ site.protocol ~ alias.domain }}</li>
             {% endfor %}
         </ul>
     {% endset %}
