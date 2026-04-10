@@ -347,11 +347,17 @@ class FactoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // $form->getData() holds the submitted values
             $site = $form->getData();
+            $domain = $site->getDomain();
+
+            // Remove all occurrences of 'http://' and 'https://' from domain
+            if (strpos($domain, 'http://') === 0 || strpos($domain, 'https://') === 0) {
+                $domain = preg_replace('/https?:\/\//', '', $domain);
+            }
 
             $taskBufferManager->newSite(
                 $site->getPlatform()->getId(),
                 $site->getName(),
-                $site->getDomain(),
+                $domain,
                 $site->getInstallProfile()->getId(),
                 $site->getLanguage()
             );
