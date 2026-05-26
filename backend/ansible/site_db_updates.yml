@@ -1,0 +1,15 @@
+##
+# ansible-playbook -i inventory site_db_updates.yml
+---
+- name: Run database updates on a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Run database updates on a site
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: db_updates.yml

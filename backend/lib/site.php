@@ -1,11 +1,11 @@
 <?php
 /**
  * Dropfactory Backend - Site Class
- * 
+ *
  * Represents a website on a given drupal platform
- * 
+ *
  * PHP version 8
- * 
+ *
  * @author  Ludovic Poujol <lpoujol@evolix.fr>
  * @author  Gregory Colpart <reg@evolix.fr>
  * @author  Evolix <info@evolix.fr>
@@ -30,15 +30,15 @@ class Site
     protected Ansible $ansible;
 
     /**
-     * Initiate a site 
-     *  
+     * Initiate a site
+     *
      * @param String $name        Site name
      * @param Int    $platform_id the platform id (in database)
      * @param String $domain      the site domain name (fqdn)
      * @param int    $profile_id  the platform profile (identified by it's db id) for the site
-     * @param String $language    the site lang 
+     * @param String $language    the site lang
      */
-    function __construct(String $name, 
+    function __construct(String $name,
         Int $platform_id,
         String $domain,
         int $profile_id,
@@ -60,7 +60,7 @@ class Site
         $this->site_platform = $platform;
     }
 
-    /** 
+    /**
      * (Placeholder) Get a site list (from database?)
      */
     static function list() : void
@@ -70,16 +70,16 @@ class Site
 
     /**
      * TASK : Create a new site
-     * 
+     *
      * @param String $name        Site name
      * @param int    $platform_id The platform id
      * @param String $domain      The main domain used by the website
      * @param int    $profile_id  The profile id of the platform to use
      * @param String $language    The language to use (ex: 'fr', 'en')
-     * 
+     *
      * @return Site The newly created site
      */
-    static function task_add(String $name, 
+    static function task_add(String $name,
         int $platform_id,
         String $domain,
         int $profile_id,
@@ -90,15 +90,15 @@ class Site
         $site->insert();
         $site->create();
         $site->set_enabled();
-        
+
         return $site;
     }
 
-    /** 
-     * TASK : Clear site cache 
-     * 
+    /**
+     * TASK : Clear site cache
+     *
      * @param Int $site_id the site id
-     * 
+     *
      * @return Site The site we want cache:clear
      */
     static function task_clear_cache(int $site_id): Site
@@ -109,11 +109,41 @@ class Site
         return $site;
     }
 
-    /** 
-     * TASK : Reset password 
-     * 
+    /**
+     * TASK : Run site cron
+     *
      * @param Int $site_id the site id
-     * 
+     *
+     * @return Site The site we want to run cron on
+     */
+    static function task_run_cron(int $site_id): Site
+    {
+        $site = Site::init_by_id($site_id);
+        $site->run_cron();
+
+        return $site;
+    }
+
+    /**
+     * TASK : Run site database updates
+     *
+     * @param Int $site_id the site id
+     *
+     * @return Site The site we want to update
+     */
+    static function task_db_updates(int $site_id): Site
+    {
+        $site = Site::init_by_id($site_id);
+        $site->db_updates();
+
+        return $site;
+    }
+
+    /**
+     * TASK : Reset password
+     *
+     * @param Int $site_id the site id
+     *
      * @return Site The site we want to fetch a login URL
      */
     static function task_reset_password(int $site_id): Site
@@ -124,11 +154,11 @@ class Site
         return $site;
     }
 
-    /** 
+    /**
      * TASK : Disable site
-     * 
+     *
      * @param Int $site_id the site id
-     * 
+     *
      * @return Site The site we disabled
      */
     static function task_disable(int $site_id): Site
@@ -139,11 +169,11 @@ class Site
     }
 
 
-    /** 
+    /**
      * TASK : Enable site
-     * 
+     *
      * @param Int $site_id the site id
-     * 
+     *
      * @return Site The site we enabled
      */
     static function task_enable(int $site_id): Site
@@ -153,45 +183,45 @@ class Site
         return $site;
     }
 
-    
 
-    /** 
+
+    /**
      * Update the site informations in database
-     * 
+     *
      * @return void
      */
     function update() : void
     {
-        $query = 'UPDATE `Site` 
+        $query = 'UPDATE `Site`
                     SET
                     status = :status
                 where id = :id';
-        
+
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
-            ['id' => $this->site_id, 
+            ['id' => $this->site_id,
             'status' => $this->site_status]
         );
     }
 
     /**
      * Insert the site informations in database
-     * 
+     *
      * @return void
      */
     function insert() : void
     {
-        $query = 'INSERT INTO `Site` 
-                (install_profile_id, platform_id, name, domain, language, status) 
+        $query = 'INSERT INTO `Site`
+                (install_profile_id, platform_id, name, domain, language, status)
                 VALUES (:install_profile_id ,:platform_id, :name, :domain, :language, :status)';
-        
+
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
             ['install_profile_id'  => $this->site_profile_id,
                         'platform_id'         => $this->site_platform_id,
-                        'name'                => $this->site_name, 
+                        'name'                => $this->site_name,
                         'domain'              => $this->site_domain,
                         'language'            => $this->site_language,
             'status'              => $this->site_status]
@@ -202,7 +232,7 @@ class Site
 
     /**
      * Create the site on the system (with ansible)
-     * 
+     *
      * @return void
      */
     function create() : void
@@ -223,9 +253,9 @@ class Site
 
     /**
      * Clear cache the site (with ansible)
-     * 
+     *
      * @return void
-     */ 
+     */
     function clear_cache() : void
     {
         echo "Clearing cache the site\n";
@@ -240,10 +270,46 @@ class Site
     }
 
     /**
-     * Reset admin password of the site (with ansible)
-     * 
+     * Run cron on the site with ansible.
+     *
      * @return void
-     */ 
+     */
+    function run_cron(): void
+    {
+        echo "Running cron on the site\n";
+
+        $this->ansible = new Ansible("site_run_cron.yml");
+        $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
+        $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_platform_user", "platform_" . $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_id", $this->site_id);
+        $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->run();
+    }
+
+    /**
+     * Run database updates on the site with ansible.
+     *
+     * @return void
+     */
+    function db_updates(): void
+    {
+        echo "Running database updates on the site\n";
+
+        $this->ansible = new Ansible("site_db_updates.yml");
+        $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
+        $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_platform_user", "platform_" . $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_id", $this->site_id);
+        $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->run();
+    }
+
+    /**
+     * Reset admin password of the site (with ansible)
+     *
+     * @return void
+     */
     function reset_password() : void
     {
         echo "Reseting password\n";
@@ -254,7 +320,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_platform_user", "platform_".$this->site_platform_id);
         $this->ansible->add_var("dropfactory_site_id", $this->site_id);
         $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
-        
+
         $this->ansible->run();
 
         // fetch the reset password URL from the ansible logs output
@@ -264,9 +330,9 @@ class Site
 
     /**
      * Disable a site (with ansible)
-     * 
+     *
      * @return void
-     */ 
+     */
     function disable() : void
     {
         echo "Disable site\n";
@@ -279,7 +345,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
 
-        
+
         $this->ansible->run();
 
         // Update status
@@ -289,9 +355,9 @@ class Site
 
     /**
      * Enable a site (with ansible)
-     * 
+     *
      * @return void
-     */ 
+     */
     function enable() : void
     {
         echo "Enable site\n";
@@ -304,7 +370,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
 
-        
+
         $this->ansible->run();
 
         // Update status
@@ -315,14 +381,14 @@ class Site
 
     /**
      * Initialize a Site Object with a database id
-     * 
+     *
      * @param Int $site_id The site id in database
-     * 
+     *
      * @return Site A site object initialized with informations from database
      */
     static function init_by_id(int $site_id) : Site
     {
-        $query = 'SELECT `id`, `platform_id`, `name`, `domain`, `language`, `install_profile_id`, `status` FROM `Site` 
+        $query = 'SELECT `id`, `platform_id`, `name`, `domain`, `language`, `install_profile_id`, `status` FROM `Site`
                   where `id` = :id';
         $stmt = DB::$pdo->prepare($query);
 
@@ -338,7 +404,7 @@ class Site
 
     /**
      * Set site as enabled & update the status in database
-     * 
+     *
      * @return void
      */
     function set_enabled() : void
@@ -350,7 +416,7 @@ class Site
 
     /**
      * Get logs from Ansible
-     * 
+     *
      * @return String Json encoded log output of Ansible
      */
     function get_logs() : String
@@ -360,7 +426,7 @@ class Site
 
     /**
      * Check if ansible return code was 0 (ok) or not
-     * 
+     *
      * @return Bool : True if ansible exec returned 0, false otherwise
      */
     function get_ansible_status() : bool
@@ -368,9 +434,9 @@ class Site
         return $this->ansible->is_okay();
     }
 
-    /** 
+    /**
      * Return the site's profile name
-     * 
+     *
      * @return String the profile's name
      */
     function get_profile_name(): String
@@ -394,9 +460,9 @@ class Site
         return $row['name'];
     }
 
-    /** 
+    /**
      * Return the site ID
-     * 
+     *
      * @return int the site id
      */
     function get_id(): int
@@ -406,9 +472,9 @@ class Site
 
     /**
      * Set the id
-     * 
+     *
      * @param Int $site_id The site id (in database)
-     * 
+     *
      * @return void
      */
     function set_id(int $site_id): void
@@ -417,9 +483,9 @@ class Site
     }
 
     /**
-     * Return the password reset/login URL for the website 
+     * Return the password reset/login URL for the website
      * (after a reset_password task)
-     * 
+     *
      * @return String The password reset URL
      */
     function get_password_reset_url() : String

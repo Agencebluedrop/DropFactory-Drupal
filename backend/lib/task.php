@@ -1,11 +1,11 @@
 <?php
 /**
  * Dropfactory Backend - Task Class
- * 
+ *
  * Represents a task to be handled
- * 
+ *
  * PHP version 8
- * 
+ *
  * @author  Ludovic Poujol <lpoujol@evolix.fr>
  * @author  Gregory Colpart <reg@evolix.fr>
  * @author  Evolix <info@evolix.fr>
@@ -42,7 +42,7 @@ class Task
     }
 
 
-    /** 
+    /**
      * Validate task parameters (placeholder)
      * This fuction does nothing
      */
@@ -52,19 +52,19 @@ class Task
     }
 
     /**
-     * Insert the task into the Task table 
+     * Insert the task into the Task table
      */
     function insert() : void
     {
 
-        $query = 'INSERT INTO `Task` 
-                (created_at, status, action, parameters) 
+        $query = 'INSERT INTO `Task`
+                (created_at, status, action, parameters)
                 VALUES (:created_at, :status, :action, :parameters)';
-        
+
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
-            ['created_at' => $this->tasks_buffer_created_at->format("Y-m-d H:i:s"), 
+            ['created_at' => $this->tasks_buffer_created_at->format("Y-m-d H:i:s"),
                         'status' => $this->task_status,
                         'action' => $this->tasks_buffer_action,
             'parameters' => json_encode($this->tasks_buffer_parameters)]
@@ -81,7 +81,7 @@ class Task
     function update() : void
     {
 
-        $query = 'UPDATE `Task` 
+        $query = 'UPDATE `Task`
         SET
             started_at = :started_at,
             ended_at = :ended_at,
@@ -92,7 +92,7 @@ class Task
         $stmt = DB::$pdo->prepare($query);
 
         $stmt->execute(
-            ['started_at' => ($this->task_started_at !== null ) ? $this->task_started_at->format("Y-m-d H:i:s") : null , 
+            ['started_at' => ($this->task_started_at !== null ) ? $this->task_started_at->format("Y-m-d H:i:s") : null ,
                         'ended_at' => ($this->task_ended_at !== null ) ? $this->task_ended_at->format("Y-m-d H:i:s") : null ,
                         'status' => $this->task_status,
                         'action' => $this->tasks_buffer_action,
@@ -105,7 +105,7 @@ class Task
      * Set the source entity of the task
      * It's the database id of the entity tied to the action
      * (ie: if it's a PLATFORM_ADD action of the newly created platform in database )
-     * 
+     *
      * @param int $source_entity Database ID of the entity related to the task
      */
     function set_source_entity(int $source_entity) : void
@@ -113,7 +113,7 @@ class Task
 
         $this->task_source_entity = $source_entity;
 
-        $query = 'UPDATE `Task` 
+        $query = 'UPDATE `Task`
         SET source_entity = :source_entity
         WHERE id = :task_id';
 
@@ -130,7 +130,7 @@ class Task
      */
     function remove_from_buffer() : void
     {
-        $query = 'DELETE FROM `TaskBuffer` 
+        $query = 'DELETE FROM `TaskBuffer`
         where id = :id';
 
         $stmt = DB::$pdo->prepare($query);
@@ -208,9 +208,9 @@ class Task
                 else {
                     $this->end();
                 }
-                    
+
                 break;
-                
+
             case 'PLATFORM_PULL':
                 echo "Doing PLATFORM_PULL\n";
 
@@ -235,14 +235,14 @@ class Task
             case 'SITE_ADD':
                 echo "Doing SITE_ADD\n";
                 $site = Site::task_add(
-                    $this->tasks_buffer_parameters->name, 
+                    $this->tasks_buffer_parameters->name,
                     $this->tasks_buffer_parameters->platformId,
                     $this->tasks_buffer_parameters->domain,
-                    $this->tasks_buffer_parameters->installProfileId, 
+                    $this->tasks_buffer_parameters->installProfileId,
                     $this->tasks_buffer_parameters->language
                 );
                 $this->set_source_entity($site->get_id());
-                    
+
                 $this->save_logs($site->get_logs());
 
                 if($site->get_ansible_status() === false) {
@@ -257,7 +257,7 @@ class Task
                 echo "Doing SITE_RESET_PASSWORD\n";
                 $site = Site::task_reset_password($this->tasks_buffer_parameters->resourceId);
                 $this->set_source_entity($site->get_id());
-                    
+
                 $this->save_logs($site->get_logs());
 
                 if($site->get_ansible_status() === false) {
@@ -278,7 +278,7 @@ class Task
                 echo "Doing SITE_CLEAR_CACHE\n";
                 $site = Site::task_clear_cache($this->tasks_buffer_parameters->resourceId);
                 $this->set_source_entity($site->get_id());
-                    
+
                 $this->save_logs($site->get_logs());
 
                 if($site->get_ansible_status() === false) {
@@ -289,12 +289,40 @@ class Task
                 }
 
                 break;
+            case 'SITE_RUN_CRON':
+                echo "Doing SITE_RUN_CRON\n";
 
+                $site = Site::task_run_cron($this->tasks_buffer_parameters->resourceId);
+                $this->set_source_entity($site->get_id());
+                $this->save_logs($site->get_logs());
+
+                if ($site->get_ansible_status() === false) {
+                    $this->end_warning();
+                } else {
+                    $this->end();
+                }
+
+                break;
+
+            case 'SITE_DB_UPDATES':
+                echo "Doing SITE_DB_UPDATES\n";
+
+                $site = Site::task_db_updates($this->tasks_buffer_parameters->resourceId);
+                $this->set_source_entity($site->get_id());
+                $this->save_logs($site->get_logs());
+
+                if ($site->get_ansible_status() === false) {
+                    $this->end_warning();
+                } else {
+                    $this->end();
+                }
+
+                break;
             case 'SITE_DISABLE':
                 echo "Doing SITE_DISABLE\n";
                 $site = Site::task_disable($this->tasks_buffer_parameters->resourceId);
                 $this->set_source_entity($site->get_id());
-                    
+
                 $this->save_logs($site->get_logs());
 
                 if($site->get_ansible_status() === false) {
@@ -310,7 +338,7 @@ class Task
                 echo "Doing SITE_ENABLE\n";
                 $site = Site::task_enable($this->tasks_buffer_parameters->resourceId);
                 $this->set_source_entity($site->get_id());
-                    
+
                 $this->save_logs($site->get_logs());
 
                 if($site->get_ansible_status() === false) {
@@ -319,9 +347,9 @@ class Task
                 else {
                     $this->end();
                 }
-    
+
                 break;
-                
+
 
             default:
                 // Unkown task => Let's set it as "FAILED"
@@ -347,7 +375,7 @@ class Task
     function save_logs( String $logs ) : void
     {
 
-        $query = 'UPDATE `Task` 
+        $query = 'UPDATE `Task`
         SET
             logs = :logs
         WHERE id = :task_id';
@@ -358,7 +386,7 @@ class Task
             ['logs' => $logs,
             'task_id' => $this->task_id ]
         );
-        
+
     }
 
     /**
@@ -367,7 +395,7 @@ class Task
     function save_results( String $results ) : void
     {
 
-        $query = 'UPDATE `Task` 
+        $query = 'UPDATE `Task`
         SET
             results = :results
         WHERE id = :task_id';
@@ -378,6 +406,6 @@ class Task
             ['results' => $results,
             'task_id' => $this->task_id ]
         );
-        
+
     }
 }

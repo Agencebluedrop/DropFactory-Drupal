@@ -1,0 +1,14 @@
+---
+- name: Run Drupal database updates
+  ansible.builtin.shell:
+    chdir: "~{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
+    cmd: "umask 027; ~/platform/vendor/bin/drush updatedb --yes"
+  become: true
+  become_user: "{{ dropfactory_site_platform_user }}"
+
+- name: Rebuild Drupal cache after database updates
+  ansible.builtin.shell:
+    chdir: "~{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
+    cmd: "umask 027; ~/platform/vendor/bin/drush cache:rebuild --yes"
+  become: true
+  become_user: "{{ dropfactory_site_platform_user }}"

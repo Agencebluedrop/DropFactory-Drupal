@@ -1,0 +1,15 @@
+##
+# ansible-playbook -i inventory site_run_cron.yml
+---
+- name: Run cron on a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Run cron on a site
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: run_cron.yml

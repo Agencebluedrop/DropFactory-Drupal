@@ -22,15 +22,21 @@ The DropFactory project is the result of a collaboration between two partners ac
 
 On a brand new Debian 12/13 system.
 
-Requirements : 
+Requirements :
 
 * GNU/Linux Debian 12 (Bookworm) or 13 (Trixie) system dedicated to DropFactory
 * Nginx
 * MariaDB
 * PHP-FPM 8.4 (from deb.sury.org on Debian 12 systems - Debian 13 runs with PHP8.4)
+*
+* Composer - install PHP dependencies for the DropFactory frontend and for Drupal platforms managed by
+* DropFactory. Drupal platforms must have their Composer dependencies installed before sites are created,
+* otherwise commands such as Drush may be unavailable.
+*
 * NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
 * certbot (`apt install certbot`)
+
 
 
 System settings :
@@ -43,10 +49,10 @@ System settings :
 # mount -o remount /home
 
 ## Ensure that created users will have their home directory in 0750
-# echo "DIR_MODE=0750" >> /etc/adduser.conf 
+# echo "DIR_MODE=0750" >> /etc/adduser.conf
 ~~~
 
-Create UNIX accounts : 
+Create UNIX accounts :
 
 ~~~
 # adduser --disabled-password dropfactory
@@ -56,12 +62,12 @@ Create UNIX accounts :
 ~~~
 
 > *Note*: Here, the complete Dropfactory system is deployed inside one UNIX account (with a separate one for PHP execution).
-> It's also possible to deploy to separate UNIX account the frontend and backend sides. Even on a different server as long as they both 
+> It's also possible to deploy to separate UNIX account the frontend and backend sides. Even on a different server as long as they both
 > Use the same MySQL host
 
 
 
-Ensure the backend will be able to SSH as root localy : 
+Ensure the backend will be able to SSH as root localy :
 
 ~~~
 # su - dropfactory
@@ -288,11 +294,11 @@ server {
 }
 
 # ln -s /etc/nginx/sites-available/dropfactory.conf /etc/nginx/sites-enabled/
-# nginx -t 
+# nginx -t
 # systemctl reload nginx
 ~~~
 
-To enable SSL on the vhost, uncomment the `include snippets/letsencrypt.conf;` directive and add the following file : 
+To enable SSL on the vhost, uncomment the `include snippets/letsencrypt.conf;` directive and add the following file :
 
 ~~~
 # cat /etc/nginx/snippets/letsencrypt.conf
@@ -311,7 +317,7 @@ location ~ /.well-known/acme-challenge {
 You can now uncomment the rest of the SSL related directives & the listen on port 443 (HTTPS)
 
 
-PHP-FPM : 
+PHP-FPM :
 
 ~~~
 # cat << UNILIKELY_EOF > /etc/php/8.4/fpm/pool.d/dropfactory.conf
