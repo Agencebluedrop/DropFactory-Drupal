@@ -36,8 +36,8 @@ Requirements :
 * NodeJS 22 (from NodeSource repositories)
 * ansible (`apt install ansible`)
 * certbot (`apt install certbot`)
-
-
+* Python 3 PyMySQL module (`apt install python3-pymysql` or `apt install python3-mysqldb`)
+* APG password generator (`apt install apg`)
 
 System settings :
 

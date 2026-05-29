@@ -4,4 +4,4 @@
     chdir: "~{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
     cmd: "umask 027; ~/platform/vendor/bin/drush core:cron --yes"
   become: true
-  become_user: "{{ dropfactory_site_platform_user }}"db_updates.yml
+  become_user: "{{ dropfactory_site_platform_user }}"
