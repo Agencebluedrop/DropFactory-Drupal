@@ -183,7 +183,20 @@ class Site
         return $site;
     }
 
+    /**
+     * TASK : Delete site
+     *
+     * @param Int $site_id the site id
+     *
+     * @return Site The site we deleted
+     */
+    static function task_delete(int $site_id): Site
+    {
+        $site = Site::init_by_id($site_id);
+        $site->delete();
 
+        return $site;
+    }
 
     /**
      * Update the site informations in database
@@ -378,6 +391,33 @@ class Site
         $this->update();
     }
 
+    /**
+     * Delete a site with ansible.
+     *
+     * This creates a backup, removes the vhost, deletes the Drupal multisite
+     * folder, drops the MySQL user and drops the database.
+     *
+     * @return void
+     */
+    function delete(): void
+    {
+        echo "Delete site\n";
+
+        $this->ansible = new Ansible("site_delete.yml");
+        $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
+        $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_platform_user", "platform_" . $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_id", $this->site_id);
+        $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->add_var("dropfactory_site_db", "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
+        $this->ansible->add_var("dropfactory_site_vhost", "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
+        $this->ansible->run();
+
+        if ($this->ansible->is_okay()) {
+            $this->site_status = "DELETED";
+            $this->update();
+        }
+    }
 
     /**
      * Initialize a Site Object with a database id

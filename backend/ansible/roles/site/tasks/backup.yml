@@ -1,0 +1,40 @@
+---
+- name: Generate backup timestamp
+  ansible.builtin.set_fact:
+    dropfactory_site_backup_timestamp: "{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+
+- name: Define site backup directory
+  ansible.builtin.set_fact:
+    dropfactory_site_backup_dir: "/home/{{ dropfactory_site_platform_user }}/backups/{{ dropfactory_site_domain[0] }}-{{ dropfactory_site_backup_timestamp }}"
+
+- name: Create site backup directory
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_backup_dir }}"
+    state: directory
+    owner: "{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "0750"
+
+- name: Dump site database
+  community.mysql.mysql_db:
+    login_host: "{{ dropfactory_site_database_host }}"
+    name: "{{ dropfactory_site_db }}"
+    state: dump
+    target: "{{ dropfactory_site_backup_dir }}/database.sql"
+
+- name: Set database dump ownership
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_backup_dir }}/database.sql"
+    owner: "{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "0640"
+
+- name: Archive Drupal site folder
+  community.general.archive:
+    path: "/home/{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
+    dest: "{{ dropfactory_site_backup_dir }}/sites-folder.tar.gz"
+    format: gz
+    owner: "{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "0640"
+  when: dropfactory_site_domain[0] | length > 0v

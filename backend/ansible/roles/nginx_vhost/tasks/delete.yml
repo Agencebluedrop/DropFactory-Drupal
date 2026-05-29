@@ -1,0 +1,12 @@
+---
+- name: Disable vhost {{ dropfactory_site_vhost }}
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/{{ dropfactory_site_vhost }}.conf"
+    state: absent
+  notify: Reload nginx
+
+- name: Delete vhost {{ dropfactory_site_vhost }}
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-available/{{ dropfactory_site_vhost }}.conf"
+    state: absent
+  notify: Reload nginx

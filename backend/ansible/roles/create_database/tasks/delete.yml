@@ -1,0 +1,30 @@
+---
+- name: Delete MySQL user "{{ dropfactory_site_db }}"
+  community.mysql.mysql_user:
+    login_host: "{{ dropfactory_site_database_host }}"
+    name: "{{ dropfactory_site_db }}"
+    host: "%"
+    state: absent
+  tags:
+    - delete_database
+
+- name: Drop database "{{ dropfactory_site_db }}"
+  community.mysql.mysql_db:
+    login_host: "{{ dropfactory_site_database_host }}"
+    name: "{{ dropfactory_site_db }}"
+    state: absent
+  tags:
+    - delete_database
+
+- name: Remove database credentials from /root/.my.cnf
+  community.general.ini_file:
+    path: "/root/.my.cnf"
+    section: "{{ dropfactory_site_db }}"
+    option: "{{ item }}"
+    state: absent
+    mode: "0600"
+  loop:
+    - host
+    - login
+    - database
+    - password

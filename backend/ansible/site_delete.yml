@@ -1,0 +1,30 @@
+##
+# ansible-playbook -i inventory site_delete.yml
+---
+- name: Delete a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Backup site before deletion
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: backup.yml
+
+    - name: Disable and remove site vhost
+      ansible.builtin.include_role:
+        name: nginx_vhost
+        tasks_from: delete.yml
+
+    - name: Delete Drupal site folder
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: delete.yml
+
+    - name: Drop site database and MySQL user
+      ansible.builtin.include_role:
+        name: create_database
+        tasks_from: delete.yml

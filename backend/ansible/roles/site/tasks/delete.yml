@@ -1,0 +1,6 @@
+---
+- name: Delete Drupal site folder
+  ansible.builtin.file:
+    path: "/home/{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
+    state: absent
+  when: dropfactory_site_domain[0] | length > 0

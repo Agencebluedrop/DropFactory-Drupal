@@ -350,6 +350,20 @@ class Task
 
                 break;
 
+            case 'SITE_DELETE':
+                echo "Doing SITE_DELETE\n";
+
+                $site = Site::task_delete($this->tasks_buffer_parameters->resourceId);
+                $this->set_source_entity($site->get_id());
+                $this->save_logs($site->get_logs());
+
+                if ($site->get_ansible_status() === false) {
+                    $this->end_warning();
+                } else {
+                    $this->end();
+                }
+
+                break;
 
             default:
                 // Unkown task => Let's set it as "FAILED"
