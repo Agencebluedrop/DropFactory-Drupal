@@ -16,11 +16,13 @@
     mode: "0750"
 
 - name: Dump site database
-  community.mysql.mysql_db:
-    login_host: "{{ dropfactory_site_database_host }}"
-    name: "{{ dropfactory_site_db }}"
-    state: dump
-    target: "{{ dropfactory_site_backup_dir }}/database.sql"
+  ansible.builtin.command:
+    argv:
+      - mysqldump
+      - "--defaults-group-suffix=_{{ dropfactory_site_db }}"
+      - "--result-file={{ dropfactory_site_backup_dir }}/database.sql"
+      - "{{ dropfactory_site_db }}"
+  become: true
 
 - name: Set database dump ownership
   ansible.builtin.file:
