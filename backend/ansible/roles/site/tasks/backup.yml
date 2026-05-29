@@ -39,4 +39,4 @@
     owner: "{{ dropfactory_site_platform_user }}"
     group: "{{ dropfactory_site_platform_user }}"
     mode: "0640"
-  when: dropfactory_site_domain[0] | length > 0v
+  when: dropfactory_site_domain[0] | length > 0
