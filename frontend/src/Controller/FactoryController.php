@@ -169,11 +169,29 @@ class FactoryController extends AbstractController
             $availableTasks = [];
 
             if ($site->getStatus() === Site::STATUS_ENABLED) {
-                $availableTasks[] = [
-                    'label' => 'Verify site', // 'SITE_VERIFY',
-                    'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
-                    'icon' => 'verify'
-                ];
+                if ($this->isGranted('ROLE_ADMIN')) {
+                    $availableTasks[] = [
+                        'label' => 'Verify site', // 'SITE_VERIFY',
+                        'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
+                        'icon' => 'verify'
+                    ];
+                    $availableTasks[] = [
+                        'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
+                        'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
+                        'icon' => 'reinitialise'
+                    ];
+                    $availableTasks[] = [
+                        'label' => 'Database updates', // 'SITE_DB_UPDATES',
+                        'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
+                        'icon' => 'update'
+                    ];
+                    $availableTasks[] = [
+                        'label' => 'Backup', // 'SITE_BACKUP',
+                        'url' => '/new_task/SITE_BACKUP/' . $site->getId(),
+                        'icon' => 'backup'
+                    ];
+                }
+
                 $availableTasks[] = [
                     'label' => 'Clear Drupal cache', // 'SITE_CLEAR_CACHE',
                     'url' => '/new_task/SITE_CLEAR_CACHE/' . $site->getId(),
@@ -185,24 +203,9 @@ class FactoryController extends AbstractController
                     'icon' => 'cron'
                 ];
                 $availableTasks[] = [
-                    'label' => 'Database updates', // 'SITE_DB_UPDATES',
-                    'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
-                    'icon' => 'update'
-                ];
-                $availableTasks[] = [
-                    'label' => 'Backup', // 'SITE_BACKUP',
-                    'url' => '/new_task/SITE_BACKUP/' . $site->getId(),
-                    'icon' => 'backup'
-                ];
-                $availableTasks[] = [
                     'label' => 'Clone', // 'SITE_CLONE',
                     'url' => '/new_task/SITE_CLONE/' . $site->getId(),
                     'icon' => 'clone'
-                ];
-                $availableTasks[] = [
-                    'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
-                    'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
-                    'icon' => 'reinitialise'
                 ];
                 $availableTasks[] = [
                     'label' => 'Disable', // 'SITE_DISABLE',
@@ -272,11 +275,29 @@ class FactoryController extends AbstractController
         $availableTasks = [];
 
         if ($site->getStatus() === Site::STATUS_ENABLED) {
-            $availableTasks[] = [
-                'label' => 'Verify site', // 'SITE_VERIFY',
-                'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
-                'icon' => 'verify'
-            ];
+            if ($this->isGranted('ROLE_ADMIN')) {
+                $availableTasks[] = [
+                    'label' => 'Verify site', // 'SITE_VERIFY',
+                    'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
+                    'icon' => 'verify'
+                ];
+                $availableTasks[] = [
+                    'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
+                    'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
+                    'icon' => 'reinitialise'
+                ];
+                $availableTasks[] = [
+                    'label' => 'Database updates', // 'SITE_DB_UPDATES',
+                    'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
+                    'icon' => 'update'
+                ];
+                $availableTasks[] = [
+                    'label' => 'Backup', // 'SITE_BACKUP',
+                    'url' => '/new_task/SITE_BACKUP/' . $site->getId(),
+                    'icon' => 'backup'
+                ];
+            }
+
             $availableTasks[] = [
                 'label' => 'Clear Drupal cache', // 'SITE_CLEAR_CACHE',
                 'url' => '/new_task/SITE_CLEAR_CACHE/' . $site->getId(),
@@ -288,24 +309,9 @@ class FactoryController extends AbstractController
                 'icon' => 'cron'
             ];
             $availableTasks[] = [
-                'label' => 'Database updates', // 'SITE_DB_UPDATES',
-                'url' => '/new_task/SITE_DB_UPDATES/' . $site->getId(),
-                'icon' => 'update'
-            ];
-            $availableTasks[] = [
-                'label' => 'Backup', // 'SITE_BACKUP',
-                'url' => '/new_task/SITE_BACKUP/' . $site->getId(),
-                'icon' => 'backup'
-            ];
-            $availableTasks[] = [
                 'label' => 'Clone', // 'SITE_CLONE',
                 'url' => '/new_task/SITE_CLONE/' . $site->getId(),
                 'icon' => 'clone'
-            ];
-            $availableTasks[] = [
-                'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
-                'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
-                'icon' => 'reinitialise'
             ];
             $availableTasks[] = [
                 'label' => 'Disable', // 'SITE_DISABLE',
