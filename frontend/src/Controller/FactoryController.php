@@ -35,11 +35,11 @@ class FactoryController extends AbstractController
 
             if ($this->isGranted('ROLE_ADMIN')) {
                 if ($platform->getStatus() === Platform::STATUS_ENABLED) {
-                    $availableTasks[] = [
-                        'label' => 'Verify platform', // 'PLATFORM_VERIFY',
-                        'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
-                        'icon' => 'verify'
-                    ];
+                    // $availableTasks[] = [
+                    //     'label' => 'Verify platform', // 'PLATFORM_VERIFY',
+                    //     'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
+                    //     'icon' => 'verify'
+                    // ];
                     $availableTasks[] = [
                         'label' => 'Git pull', // 'PLATFORM_PULL',
                         'url' => '/new_task/PLATFORM_PULL/' . $platform->getId(),
@@ -94,11 +94,11 @@ class FactoryController extends AbstractController
 
         if ($this->isGranted('ROLE_ADMIN')) {
             if ($platform->getStatus() === Platform::STATUS_ENABLED) {
-                $availableTasks[] = [
-                    'label' => 'Verify platform', // 'PLATFORM_VERIFY',
-                    'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
-                    'icon' => 'verify'
-                ];
+                // $availableTasks[] = [
+                //     'label' => 'Verify platform', // 'PLATFORM_VERIFY',
+                //     'url' => '/new_task/PLATFORM_VERIFY/' . $platform->getId(),
+                //     'icon' => 'verify'
+                // ];
                 $availableTasks[] = [
                     'label' => 'Git pull', // 'PLATFORM_PULL',
                     'url' => '/new_task/PLATFORM_PULL/' . $platform->getId(),
@@ -170,11 +170,11 @@ class FactoryController extends AbstractController
 
             if ($site->getStatus() === Site::STATUS_ENABLED) {
                 if ($this->isGranted('ROLE_ADMIN')) {
-                    $availableTasks[] = [
-                        'label' => 'Verify site', // 'SITE_VERIFY',
-                        'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
-                        'icon' => 'verify'
-                    ];
+                    // $availableTasks[] = [
+                    //     'label' => 'Verify site', // 'SITE_VERIFY',
+                    //     'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
+                    //     'icon' => 'verify'
+                    // ];
                     $availableTasks[] = [
                         'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
                         'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
@@ -276,11 +276,11 @@ class FactoryController extends AbstractController
 
         if ($site->getStatus() === Site::STATUS_ENABLED) {
             if ($this->isGranted('ROLE_ADMIN')) {
-                $availableTasks[] = [
-                    'label' => 'Verify site', // 'SITE_VERIFY',
-                    'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
-                    'icon' => 'verify'
-                ];
+                // $availableTasks[] = [
+                //     'label' => 'Verify site', // 'SITE_VERIFY',
+                //     'url' => '/new_task/SITE_VERIFY/' . $site->getId(),
+                //     'icon' => 'verify'
+                // ];
                 $availableTasks[] = [
                     'label' => 'Reset password', // 'SITE_RESET_PASSWORD',
                     'url' => '/new_task/SITE_RESET_PASSWORD/' . $site->getId(),
