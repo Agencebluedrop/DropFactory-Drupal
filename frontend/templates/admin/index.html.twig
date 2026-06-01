@@ -11,7 +11,7 @@
             <twig:Molecules:FormContainer formTitle="Welcome to the administration area">
                 <div class="flex item-center gap-4 [&>a]:w-full lg:[&>a]:w-[calc(50%-8px)] flex-wrap">
                     <twig:Atoms:Button label="Clear Symfony Caches" url="{{path('app_clear_cache')}}" icon="empty-cache" />
-                    <twig:Atoms:Button label="Backups" url="{{path('app_backups')}}" />
+                    {# <twig:Atoms:Button label="Backups" url="{{path('app_backups')}}" /> #}
                     <twig:Atoms:Button label="Add a user" url="{{path('app_register')}}" />
                     <twig:Atoms:Button label="Logout" url="{{path('app_logout')}}" variant="outline" icon="logout" btnIconColor="icon-path:fill-brand-primary" />
                 </div>
