@@ -26,8 +26,19 @@ class SiteType extends AbstractType
             ->add('name')
             ->add('domain')
             // ->add('aliases')
-            ->add('platform')
-            ->add('install_profile')
+            ->add('platform', EntityType::class, [
+                'class' => Platform::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => false,
+            ])
+            ->add('install_profile', EntityType::class, [
+                'class' => Profile::class,
+                'choice_label' => 'name',
+                'choices' => [],
+                'placeholder' => '',
+                'required' => false,
+            ])
             ->add('language', ChoiceType::class, [
                 'choices' => [
                     'French' => 'FR',
@@ -48,6 +59,8 @@ class SiteType extends AbstractType
                 'class' => Profile::class,
                 'choice_label' => 'name',
                 'choices' => $installProfiles,
+                'placeholder' => '',
+                'required' => false,
             ]);
         };
 
