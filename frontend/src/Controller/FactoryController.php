@@ -509,6 +509,24 @@ class FactoryController extends AbstractController
         if (!in_array($taskName, Task::ACTIONS)) {
             $this->addFlash('error', 'Invalid task name!');
         } else {
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $disallowedTasks = [
+                    'PLATFORM_VERIFY',
+                    'PLATFORM_PULL',
+                    'PLATFORM_DISABLE',
+                    'PLATFORM_ENABLE',
+                    'SITE_VERIFY',
+                    'SITE_DB_UPDATES',
+                    'SITE_BACKUP',
+                    'SITE_RESET_PASSWORD',
+                ];
+
+                if (in_array($taskName, $disallowedTasks)) {
+                    $this->addFlash('error', 'You are not authorized to create this task : ' . $taskName);
+                    return $this->redirectToRoute('app_tasks');
+                }
+            }
+
             $taskBufferManager->newTask($taskName, $resourceId);
 
             $this->addFlash('success', 'Task created successfully!');
