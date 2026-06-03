@@ -1,0 +1,19 @@
+##
+# ansible-playbook -i inventory site_db_updates.yml
+---
+- name: Edit a site
+  hosts: all
+  gather_facts: false
+  remote_user: root
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Edit a site
+      ansible.builtin.include_role:
+        name: site
+        tasks_from: update.yml
+    - name: Update site vhost
+      ansible.builtin.include_role:
+        name: nginx_vhost
+        tasks_from: update.yml

@@ -212,6 +212,11 @@ class FactoryController extends AbstractController
                     'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
                     'icon' => 'desactivate'
                 ];
+                $availableTasks[] = [
+                    'label' => 'EDIT SITE', // 'SITE_EDIT',
+                    'url' => '/new_task/SITE_EDIT/' . $site->getId(),
+                    'icon' => 'backup'
+                ];
             } else {
                 $availableTasks[] = [
                     'label' => 'Enable', // 'SITE_ENABLE',
@@ -312,6 +317,11 @@ class FactoryController extends AbstractController
                 'label' => 'Clone', // 'SITE_CLONE',
                 'url' => '/new_task/SITE_CLONE/' . $site->getId(),
                 'icon' => 'clone'
+            ];
+            $availableTasks[] = [
+                'label' => 'EDIT SITE', // 'SITE_EDIT',
+                'url' => '/new_task/SITE_EDIT/' . $site->getId(),
+                'icon' => 'backup'
             ];
             $availableTasks[] = [
                 'label' => 'Disable', // 'SITE_DISABLE',
