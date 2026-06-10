@@ -12,6 +12,7 @@ class Site
 {
     public const STATUS_ENABLED = 'ENABLED';
     public const STATUS_DISABLED = 'DISABLED';
+    public const STATUS_DELETED = 'DELETED';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
