@@ -212,7 +212,7 @@ class FactoryController extends AbstractController
                     'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
                     'icon' => 'desactivate'
                 ];
-            } else {
+            } elseif ($site->getStatus() === Site::STATUS_DISABLED) {
                 $availableTasks[] = [
                     'label' => 'Enable', // 'SITE_ENABLE',
                     'url' => '/new_task/SITE_ENABLE/' . $site->getId(),
@@ -225,30 +225,32 @@ class FactoryController extends AbstractController
                 ];
             }
 
-            $sitesData[] = [[
-                'id' => $site->getId(),
-                'online' => $site->getStatus() === Site::STATUS_ENABLED ? true : false,
-                'siteName' => $site->getName(),
-                'url' => $this->generateUrl('app_site', [
+            if ($site->getStatus() !== Site::STATUS_DELETED) {
+                $sitesData[] = [[
                     'id' => $site->getId(),
-                ]),
-                'siteUrl' => $site->getProtocol() . $site->getDomain(),
-                'installProfile' => $site->getInstallProfile()->getName(),
-                'availableTasks' => $availableTasks,
-            ]];
+                    'online' => $site->getStatus() === Site::STATUS_ENABLED ? true : false,
+                    'siteName' => $site->getName(),
+                    'url' => $this->generateUrl('app_site', [
+                        'id' => $site->getId(),
+                    ]),
+                    'siteUrl' => $site->getProtocol() . $site->getDomain(),
+                    'installProfile' => $site->getInstallProfile()->getName(),
+                    'availableTasks' => $availableTasks,
+                ]];
 
-            $cardsData[] = [
-                'id' => $site->getId(),
-                'online' => $site->getStatus() === Site::STATUS_ENABLED ? true : false,
-                'siteName' => $site->getName(),
-                'url' => $this->generateUrl('app_site', [
+                $cardsData[] = [
                     'id' => $site->getId(),
-                ]),
-                'siteUrl' => $site->getProtocol() . $site->getDomain(),
-                'image' => $site->getImage() ?? 'default.jpg',
-                'installProfile' => $site->getInstallProfile()->getName(),
-                'availableTasks' => $availableTasks,
-            ];
+                    'online' => $site->getStatus() === Site::STATUS_ENABLED ? true : false,
+                    'siteName' => $site->getName(),
+                    'url' => $this->generateUrl('app_site', [
+                        'id' => $site->getId(),
+                    ]),
+                    'siteUrl' => $site->getProtocol() . $site->getDomain(),
+                    'image' => $site->getImage() ?? 'default.jpg',
+                    'installProfile' => $site->getInstallProfile()->getName(),
+                    'availableTasks' => $availableTasks,
+                ];
+            }
         }
 
         return $this->render('factory/sites.html.twig', [
