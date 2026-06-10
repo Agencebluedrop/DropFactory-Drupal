@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Form\SiteType;
 use App\Form\SiteEditType;
 use App\Form\PlatformType;
+use App\Entity\Remote\Alias;
 use App\Entity\Remote\Site;
 use App\Entity\Remote\Task;
 use App\Entity\Remote\Platform;
@@ -409,9 +410,21 @@ class FactoryController extends AbstractController
             return $this->redirectToRoute('app_sites');
         }
 
-        $form = $this->createForm(SiteEditType::class, $site, [
+        //Create a Site object to use in the form only.
+        //keep the Doctrine object intact at this stage
+        $formSite = new Site();
+        $formSite->setName($site->getName());
+        $formSite->setDomain($site->getDomain());
+        foreach ($site->getAliases() as $existingAlias) {
+            $alias = new Alias();
+            $alias->setDomain($existingAlias->getDomain());
+
+            $formSite->addAlias($alias);
+        }
+
+        $form = $this->createForm(SiteEditType::class, $formSite, [
             'action' => $this->generateUrl('app_edit_site', [
-                'id' => $site->getID(),
+                'id' => $site->getId(),
             ]),
         ]);
 
@@ -425,25 +438,25 @@ class FactoryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // $form->getData() holds the submitted values
-            //$site = $form->getData();
-            $domain = $site->getDomain();
 
             // Remove all occurrences of 'http://' and 'https://' from aliases
             // if (strpos($domain, 'http://') === 0 || strpos($domain, 'https://') === 0) {
             //     $domain = preg_replace('/https?:\/\//', '', $domain);
             // }
 
-            //We build array of string aliases to send to backend app
-            $aliases = $site->getAliases()
-            //we map to string because the backend doesn't know the Alias entity.
-                ->map(static fn ($alias) => $alias->getDomain())
-                ->filter(static fn (?string $domain) => $domain !== null && trim($domain) !== '')
-                ->map(static fn (string $domain) => trim($domain))
-                ->toArray();
+            $aliases = [];
+
+            foreach ($formSite->getAliases() as $alias) {
+                $domain = trim((string) $alias->getDomain());
+
+                if ($domain !== '') {
+                    $aliases[] = $domain;
+                }
+            }
 
             $taskBufferManager->editSite(
                 $site->getId(),
-                $site->getName(),
+                $formSite->getName(),
                 $aliases,
             );
 
