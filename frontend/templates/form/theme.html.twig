@@ -10,7 +10,7 @@
     {%- if help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
-   
+
     {%- if 'choice' in form.vars.block_prefixes -%}
         {% set classes = [
             'choices-inner:pl-6 choices-inner:pr-12 choices-inner:!py-3 choices-inner:border-2 choices-inner:border-neutral-300 choices-inner:text-base choices-inner:bg-white choices-inner:text-brand-secondary choices-inner:leading-7 choices-inner:rounded-[48px]',
@@ -70,3 +70,61 @@
         {%- endif -%}
     </twig:Atoms:Button>
 {%- endblock button_widget -%}
+
+{# code copied to use the functionnality "tagging" in a textfield
+   used for Aliases field
+   Widget is "tags" and each tag becomes a value added to a hidden symfony field.
+#}
+{%- block _site_edit_aliases_widget -%}
+    {% set prototype %}
+        {% if form.vars.prototype is defined %}
+            {{ form_widget(form.vars.prototype.domain, {
+                attr: {
+                    'data-alias-domain-input': '',
+                    class: 'hidden'
+                }
+            }) }}
+        {% endif %}
+    {% endset %}
+
+    <div
+        class="tag-input-container px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full flex flex-wrap gap-2"
+        data-alias-tags
+        data-index="{{ form|length }}"
+        data-prototype="{{ prototype|e('html_attr') }}"
+    >
+        <div class="flex items-center gap-2 flex-wrap" data-alias-tags-list>
+            {% for aliasForm in form %}
+                {% set aliasValue = aliasForm.domain.vars.value %}
+
+                {% if aliasValue is not empty %}
+                    <div class="tag" data-alias-tag>
+                        <span>{{ aliasValue }}</span>
+                        <button type="button" data-remove-alias-tag>x</button>
+
+                        {{ form_widget(aliasForm.domain, {
+                            attr: {
+                                'data-alias-domain-input': '',
+                                class: 'hidden'
+                            }
+                        }) }}
+                    </div>
+                {% else %}
+                    {{ form_widget(aliasForm.domain, {
+                        attr: {
+                            'data-alias-domain-input': '',
+                            class: 'hidden'
+                        }
+                    }) }}
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <input
+            type="text"
+            class="tag-input border-0 outline-none flex-1 min-w-40"
+            data-alias-tag-input
+            placeholder="Add a tag and press Enter"
+        >
+    </div>
+{%- endblock _site_edit_aliases_widget -%}

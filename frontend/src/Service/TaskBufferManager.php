@@ -55,7 +55,7 @@ class TaskBufferManager
         $taskBuffer->setAction("SITE_EDIT");
         $taskBuffer->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris")));
         $taskBuffer->setParameters([
-            'siteId' => $siteId,
+            'resourceId' => $siteId,
             'name' => $name,
             'aliases' => $aliases,
         ]);

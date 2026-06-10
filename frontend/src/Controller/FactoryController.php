@@ -433,10 +433,18 @@ class FactoryController extends AbstractController
             //     $domain = preg_replace('/https?:\/\//', '', $domain);
             // }
 
+            //We build array of string aliases to send to backend app
+            $aliases = $site->getAliases()
+            //we map to string because the backend doesn't know the Alias entity.
+                ->map(static fn ($alias) => $alias->getDomain())
+                ->filter(static fn (?string $domain) => $domain !== null && trim($domain) !== '')
+                ->map(static fn (string $domain) => trim($domain))
+                ->toArray();
+
             $taskBufferManager->editSite(
                 $site->getId(),
                 $site->getName(),
-                $site->getAliases(),
+                $aliases,
             );
 
             $this->addFlash('success', 'Edit Site Task created successfully!');

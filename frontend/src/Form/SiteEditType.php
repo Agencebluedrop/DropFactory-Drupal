@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Remote\Site;
 use App\Entity\Remote\Alias;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,8 +16,19 @@ class SiteEditType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('domain')
-            ->add('aliases')
+            ->add('domain', null, [
+                'disabled' => true,
+                'label' => 'Domain',
+            ])
+            ->add('aliases', CollectionType::class, [
+                'entry_type' => AliasType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false, //so that Symfony uses $site->addAlias and $site->removeAlias
+                'prototype' => true,
+                'label' => 'Aliases',
+                'required' => false,
+            ])
         ;
 
         // by default, action does not appear in the <form> tag
