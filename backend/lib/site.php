@@ -113,7 +113,7 @@ class Site
      * TASK : Run site cron
      *
      * @param Int $site_id the site id
-     * 
+     *
      * @return Site The site we want to run cron on
      */
     static function task_run_cron(int $site_id): Site
@@ -160,15 +160,15 @@ class Site
      * @param Int $site_id the site id
      * @param String $name the site name
      * @param Array $aliases the site domain aliases
-     * 
-     * @return Site The site we disabled
+     *
+     * @return Site The site we edited
      */
     static function task_edit(int $site_id, string $name, array $aliases): Site
     {
-    $site = Site::init_by_id($site_id);
-    $site->edit($name, $aliases);
+        $site = Site::init_by_id($site_id);
+        $site->edit($name, $aliases);
 
-    return $site;
+        return $site;
     }
 
     /**
@@ -372,6 +372,7 @@ class Site
                 'id' => $this->site_id,
                 'name' => $name,
             ]);
+            $this->site_name = $name;
 
             $stmt = DB::$pdo->prepare('DELETE FROM `Alias` WHERE site_id = :site_id');
             $stmt->execute(['site_id' => $this->site_id]);

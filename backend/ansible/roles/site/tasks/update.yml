@@ -1,0 +1,3 @@
+- name: No site filesystem changes required for site metadata update
+  ansible.builtin.debug:
+    msg: "Site metadata updated in Dropfactory database."

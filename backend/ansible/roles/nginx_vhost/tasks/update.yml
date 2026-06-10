@@ -1,0 +1,2 @@
+- name: Update vhost configuration
+  ansible.builtin.import_tasks: main.yml

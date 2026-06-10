@@ -321,13 +321,18 @@ class Task
             case 'SITE_EDIT':
                 echo "Doing SITE_EDIT\n";
 
+                $name = trim($this->tasks_buffer_parameters->name ?? '');
+                if ($name === '') {
+                    throw new InvalidArgumentException('Missing site name.');
+                }
+
                 $site = Site::task_edit(
                     $this->tasks_buffer_parameters->resourceId,
-                    $this->tasks_buffer_parameters->name,
+                    $name,
                     $this->tasks_buffer_parameters->aliases ?? []
                 );
                 $this->set_source_entity($site->get_id());
-                
+
                 $this->save_logs($site->get_logs());
 
                 if ($site->get_ansible_status() === false) {

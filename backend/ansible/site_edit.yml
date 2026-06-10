@@ -1,5 +1,5 @@
 ##
-# ansible-playbook -i inventory site_db_updates.yml
+# ansible-playbook -i inventory site_edit.yml
 ---
 - name: Edit a site
   hosts: all
