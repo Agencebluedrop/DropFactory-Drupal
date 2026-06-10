@@ -3,7 +3,12 @@
 {% block title %}Platforms{% endblock %}
 
 {% block hero %}
-    <twig:Molecules:Hero label="Platforms" buttonText="New platform" buttonUrl="{{path('app_new_platform')}}" />
+    {% if is_granted('ROLE_ADMIN') %}
+        <twig:Molecules:Hero label="Platforms" buttonText="New platform" buttonUrl="{{ path('app_new_platform') }}" />
+    {% else %}
+        <twig:Molecules:Hero label="Platforms" />
+    {% endif %}
+
 {% endblock %}
 
 {% block body %}

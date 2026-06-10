@@ -1,10 +1,15 @@
 {% set classes = 'header bg-white lg:bg-brand-primary p-6 lg:px-16 lg:py-10 flex items-center justify-between lg:border-b-0 border-b-2 border-brand-secondary' %}
+
 {% set menuItems = [
     { 'label': 'Platforms', 'url': path('app_platforms') },
     { 'label': 'Sites', 'url': path('app_sites') },
     { 'label': 'Tasks', 'url': path('app_tasks') },
-    { 'label': 'Administration', 'url': path('app_admin') },
 ]  %}
+
+{% if is_granted('ROLE_ADMIN') %}
+    {% set menuItems = menuItems|merge([{ 'label': 'Administration', 'url': path('app_admin') }]) %}
+{% endif %}
+
 
 <header {{ attributes.defaults({class: classes, role: 'banner'}) }} x-data="{ open: false }">
     <twig:Atoms:Logo logo="logo" url="{{ path('app_homepage') }}" />
