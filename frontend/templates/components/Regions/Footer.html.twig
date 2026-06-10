@@ -7,14 +7,12 @@
         {% set menuItems = [
                 { 'label': 'Platforms', 'url': path('app_platforms') },
                 { 'label': 'Sites', 'url': path('app_sites') },
-                { 'label': 'Tasks', 'url': path('app_tasks') },
-                { 'label': 'Administration', 'url': path('app_admin') },
-                { 'label': 'My account', 'url': path('app_profile') },
+                { 'label': 'Tasks', 'url': path('app_tasks') }
             ]  %}
          <twig:Molecules:Menu menuItems="{{menuItems}}" :withUnderline="true" />
     </div>
     <div class="bg-secondary-1000 text-center text-white p-6 md:py-8 md:px-[116px] text-sm leading-6">
-        © 2025 — All rights reserved — 
+        © 2026 — All rights reserved — 
         <twig:Atoms:Link label="Legal notices" url="{{ path('app_legal_notices') }}" linkClasses="!font-normal !bg-[length:100%_1px]" />
     </div>
 </footer>
