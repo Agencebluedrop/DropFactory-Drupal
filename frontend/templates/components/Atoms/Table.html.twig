@@ -24,7 +24,7 @@
         {% endif %}
             <tbody>
                 {% for row in tableCells %}
-                    <tr class="relative even:bg-neutral-50 odd:bg-white" x-data="{ isChecked: false, online: true }" 
+                    <tr class="relative even:bg-neutral-50 odd:bg-white" x-data="{ isChecked: false, online: true }"
                         :class="{'!bg-brand-tertiary': isChecked, '!bg-error/10': !online && !isChecked}"
                     >
                         {% if withCheckbox %}
@@ -54,26 +54,31 @@
                                                 {% if cell.results is defined and cell.results is not empty %}
                                                     <twig:Atoms:ButtonExternal label="Reset password" url="{{ cell.results.password_reset_url }}" :underline="false" linkClasses="z-10 relative !text-black" />
                                                 {% endif %}
-                            
+
                                                 {% if cell.parameters is defined and cell.parameters is not empty %}
                                                     {% for key, info in cell.parameters %}
                                                     <span class="block">
-                                                        <span class="font-bold">{{ key }} : </span> 
-                                                        {{ info }}
+                                                        <span class="font-bold">{{ key }} : </span>
+                                                        {# when we added the aliases parameters (array), this broke#}
+                                                         {% if info is iterable %}
+                                                            {{ info|join(', ') }}
+                                                        {% else %}
+                                                            {{ info }}
+                                                        {% endif %}
                                                     </span>
                                                     {% endfor %}
                                                 {% endif %}
 
                                                 {% if cell.results is defined and cell.results is not empty %}
                                                     <div>
-                                                        <span class="font-bold">results : </span> 
+                                                        <span class="font-bold">results : </span>
                                                         <div><pre>{{ cell.results|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></div>
                                                     </div>
                                                 {% endif %}
 
                                                 {% if cell.logs is defined and cell.logs is not empty %}
                                                     <div>
-                                                        <span class="font-bold">logs : </span> 
+                                                        <span class="font-bold">logs : </span>
                                                         <div><pre>{{ cell.logs|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></div>
                                                     </div>
                                                 {% endif %}
@@ -106,7 +111,7 @@
                                         {% else %}
                                             <twig:Atoms:RichText text="{{ cell.resourceName }}" />
                                         {% endif %}
-                                        
+
                                     </td>
                                 {% endif %}
                                 {% if cell.platformSites is defined %}
@@ -182,7 +187,7 @@
                                         <twig:Molecules:Dropdown :listItems="cell.availableTasks"/>
                                     </td>
                                 {% endif %}
-                                
+
                             {% else %}
                             {% set listItems = [
                                 { 'label': 'Supprimer la sauvegarde', 'icon': 'trash'},

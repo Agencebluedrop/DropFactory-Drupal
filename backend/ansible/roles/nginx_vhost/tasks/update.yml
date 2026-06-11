@@ -1,2 +1,18 @@
-- name: Update vhost configuration
-  ansible.builtin.import_tasks: main.yml
+---
+- name: Update vhost {{ dropfactory_site_vhost }}
+  ansible.builtin.template:
+    src: "{{ in_template | lower }}.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ dropfactory_site_vhost }}.conf"
+    mode: "0644"
+  notify: Reload nginx
+  tags:
+    - nginx_vhost
+
+- name: Ensure vhost {{ dropfactory_site_vhost }} is enabled
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ dropfactory_site_vhost }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ dropfactory_site_vhost }}.conf"
+    state: link
+  notify: Reload nginx
+  tags:
+    - nginx_vhost

@@ -360,6 +360,18 @@ class Site
 
     function edit(string $name, array $aliases): void
     {
+        $aliases = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        static fn ($alias) => trim((string) $alias),
+                        $aliases
+                    ),
+                    fn ($alias) => $alias !== '' && $alias !== $this->site_domain
+                )
+            )
+        );
+
         DB::$pdo->beginTransaction();
 
         try {
@@ -396,12 +408,32 @@ class Site
 
             DB::$pdo->commit();
 
-            $this->logs[] = 'Site edited successfully.';
+            //$this->logs[] = 'Site edited successfully.';
         } catch (\Throwable $e) {
             DB::$pdo->rollBack();
-            $this->ansible_status = false;
-            $this->logs[] = $e->getMessage();
+            //$this->ansible_status = false;
+            //$this->logs[] = $e->getMessage();
         }
+        echo "Updating site configuration with Ansible\n";
+
+        $this->site_serveraliases = $aliases;
+        $site_domains = array_merge([$this->site_domain], $this->site_serveraliases);
+
+        $this->ansible = new Ansible("site_edit.yml");
+        $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
+        $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_platform_user", "platform_" . $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_id", $this->site_id);
+
+        $this->ansible->add_var("dropfactory_site_domain", $site_domains);
+        $this->ansible->add_var("dropfactory_site_main_domain", $this->site_domain);
+        $this->ansible->add_var("dropfactory_site_aliases", $this->site_serveraliases);
+
+        $this->ansible->add_var(
+            "dropfactory_site_vhost",
+            "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
+
+        $this->ansible->run();
     }
 
     /**

@@ -15,9 +15,11 @@
   become_user: "{{ dropfactory_platform_unix_user }}"
 
 - name: Initiate empty site.php to enable multi-sites behaviour
-  ansible.builtin.file:
-    path: "~{{ dropfactory_platform_unix_user }}/platform/web/sites/sites.php"
-    state: touch
+  ansible.builtin.copy:
+    dest: "~{{ dropfactory_platform_unix_user }}/platform/web/sites/sites.php"
+    content: "<?php\n"
+    force: false
+    #state: touch
     mode: '0640'
   become: true
   become_user: "{{ dropfactory_platform_unix_user }}"

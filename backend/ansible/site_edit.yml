@@ -17,3 +17,5 @@
       ansible.builtin.include_role:
         name: nginx_vhost
         tasks_from: update.yml
+      vars:
+        in_template: drupal
