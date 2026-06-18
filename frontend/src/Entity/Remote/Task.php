@@ -25,6 +25,7 @@ class Task
         'SITE_RESET_PASSWORD',
         'SITE_DISABLE',
         'SITE_ENABLE',
+        'SITE_EDIT',
         'SITE_DELETE',
     ];
 
@@ -201,6 +202,7 @@ class Task
             'SITE_RESET_PASSWORD' => 'Reset Password',
             'SITE_DISABLE' => 'Disable Site',
             'SITE_ENABLE' => 'Enable Site',
+            'SITE_EDIT' => 'Edit Site',
             'SITE_DELETE' => 'Delete Site',
         ];
 

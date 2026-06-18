@@ -124,7 +124,7 @@ class Platform
         $platform_id = Platform::get_id_by_name($name);
 
         if($platform_id !== false) {
-            throw new InvalidArgumentException("Platform already exists. Platformname was : ".$name);
+            throw new InvalidArgumentException("Platform already exists. Platform name was : ".$name);
         }
         // END placeholder
 

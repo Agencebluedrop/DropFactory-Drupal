@@ -155,6 +155,23 @@ class Site
     }
 
     /**
+     * TASK : Edit site
+     *
+     * @param Int $site_id the site id
+     * @param String $name the site name
+     * @param Array $aliases the site domain aliases
+     *
+     * @return Site The site we edited
+     */
+    static function task_edit(int $site_id, string $name, array $aliases): Site
+    {
+        $site = Site::init_by_id($site_id);
+        $site->edit($name, $aliases);
+
+        return $site;
+    }
+
+    /**
      * TASK : Disable site
      *
      * @param Int $site_id the site id
@@ -339,6 +356,84 @@ class Site
         // fetch the reset password URL from the ansible logs output
         $logs = $this->ansible->get_logs();
         $this->site_admin_password_reset_url = $logs->plays[0]->tasks[1]->hosts->localhost->stdout;
+    }
+
+    function edit(string $name, array $aliases): void
+    {
+        $aliases = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        static fn ($alias) => trim((string) $alias),
+                        $aliases
+                    ),
+                    fn ($alias) => $alias !== '' && $alias !== $this->site_domain
+                )
+            )
+        );
+
+        DB::$pdo->beginTransaction();
+
+        try {
+            $stmt = DB::$pdo->prepare('
+                UPDATE `Site`
+                SET name = :name
+                WHERE id = :id
+            ');
+            $stmt->execute([
+                'id' => $this->site_id,
+                'name' => $name,
+            ]);
+            $this->site_name = $name;
+
+            $stmt = DB::$pdo->prepare('DELETE FROM `Alias` WHERE site_id = :site_id');
+            $stmt->execute(['site_id' => $this->site_id]);
+
+            $stmt = DB::$pdo->prepare('
+                INSERT INTO `Alias` (site_id, domain)
+                VALUES (:site_id, :domain)
+            ');
+
+            foreach ($aliases as $alias) {
+                $alias = trim($alias);
+                if ($alias === '') {
+                    continue;
+                }
+
+                $stmt->execute([
+                    'site_id' => $this->site_id,
+                    'domain' => $alias,
+                ]);
+            }
+
+            DB::$pdo->commit();
+
+            //$this->logs[] = 'Site edited successfully.';
+        } catch (\Throwable $e) {
+            DB::$pdo->rollBack();
+            //$this->ansible_status = false;
+            //$this->logs[] = $e->getMessage();
+        }
+        echo "Updating site configuration with Ansible\n";
+
+        $this->site_serveraliases = $aliases;
+        $site_domains = array_merge([$this->site_domain], $this->site_serveraliases);
+
+        $this->ansible = new Ansible("site_edit.yml");
+        $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
+        $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_platform_user", "platform_" . $this->site_platform_id);
+        $this->ansible->add_var("dropfactory_site_id", $this->site_id);
+
+        $this->ansible->add_var("dropfactory_site_domain", $site_domains);
+        $this->ansible->add_var("dropfactory_site_main_domain", $this->site_domain);
+        $this->ansible->add_var("dropfactory_site_aliases", $this->site_serveraliases);
+
+        $this->ansible->add_var(
+            "dropfactory_site_vhost",
+            "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
+
+        $this->ansible->run();
     }
 
     /**

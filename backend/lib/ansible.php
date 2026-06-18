@@ -1,11 +1,11 @@
 <?php
 /**
  * Dropfactory Backend - Ansible Class
- * 
+ *
  * Represents an Ansible run
- * 
+ *
  * PHP version 8
- * 
+ *
  * @author  Ludovic Poujol <lpoujol@evolix.fr>
  * @author  Gregory Colpart <reg@evolix.fr>
  * @author  Evolix <info@evolix.fr>
@@ -26,7 +26,7 @@ class Ansible
 
     /**
      * Instanciate a new Ansible object for a playbook execution
-     * 
+     *
      * @param String $playbook_name The playbook file name (in ./src/ansible/)
      */
     function __construct(String $playbook_name)
@@ -37,9 +37,9 @@ class Ansible
     /**
      * Declare an additionnal variable to be added to the
      * The variables will be submited as an "extra-vars" file
-     * 
+     *
      * @param String       $name  : The variable name in ansible
-     * @param String|Array $value : The variable value 
+     * @param String|Array $value : The variable value
      */
     function add_var(String $name, String|Array $value) : void
     {
@@ -56,13 +56,13 @@ class Ansible
         putenv("ANSIBLE_STDOUT_CALLBACK=json");
 
         $tempfile_vars = tmpfile();
-        $tempfile_vars_path = stream_get_meta_data($tempfile_vars)['uri']; // eg: /tmp/phpFx0513a 
+        $tempfile_vars_path = stream_get_meta_data($tempfile_vars)['uri']; // eg: /tmp/phpFx0513a
         //fwrite($tempfile_vars, "{}");
         fwrite($tempfile_vars, json_encode($this->run_variables));
 
         $output = "";
-        
-        echo "Running asnible with the following command :\n";
+
+        echo "Running ansible with the following command :\n";
         echo "   ansible-playbook --inventory ./ansible/hosts --extra-vars @$tempfile_vars_path ./ansible/$this->playbook_name \n";
         echo "Content of the extra-vars file :\n";
         echo "   ".file_get_contents($tempfile_vars_path)."\n";
@@ -76,7 +76,7 @@ class Ansible
 
     /**
      * Check if ansible return code was 0 (ok) or not
-     * 
+     *
      * @return Bool : True if ansible exec returned 0, false otherwise
      */
     function is_okay() : Bool
@@ -86,7 +86,7 @@ class Ansible
 
     /**
      * Get the logs (ansible output)
-     * 
+     *
      * @return stdClass A class containing the decoded json outputed by ansible
      */
     function get_logs() : stdClass

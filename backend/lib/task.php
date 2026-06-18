@@ -318,6 +318,31 @@ class Task
                 }
 
                 break;
+            case 'SITE_EDIT':
+                echo "Doing SITE_EDIT\n";
+
+                $name = trim($this->tasks_buffer_parameters->name ?? '');
+                if ($name === '') {
+                    throw new InvalidArgumentException('Missing site name.');
+                }
+
+                $site = Site::task_edit(
+                    $this->tasks_buffer_parameters->resourceId,
+                    $name,
+                    $this->tasks_buffer_parameters->aliases ?? []
+                );
+                $this->set_source_entity($site->get_id());
+
+                $this->save_logs($site->get_logs());
+
+                if ($site->get_ansible_status() === false) {
+                    $this->end_warning();
+                } else {
+                    $this->end();
+                }
+
+                break;
+
             case 'SITE_DISABLE':
                 echo "Doing SITE_DISABLE\n";
                 $site = Site::task_disable($this->tasks_buffer_parameters->resourceId);

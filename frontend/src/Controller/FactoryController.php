@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Form\SiteType;
+use App\Form\SiteEditType;
 use App\Form\PlatformType;
+use App\Entity\Remote\Alias;
 use App\Entity\Remote\Site;
 use App\Entity\Remote\Task;
 use App\Entity\Remote\Platform;
@@ -212,7 +214,13 @@ class FactoryController extends AbstractController
                     'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
                     'icon' => 'desactivate'
                 ];
+                $availableTasks[] = [
+                    'label' => 'EDIT SITE', // 'SITE_EDIT',
+                    'url' => '/site/' . $site->getId() . '/edit',
+                    'icon' => 'update'
+                ];
             } elseif ($site->getStatus() === Site::STATUS_DISABLED) {
+
                 $availableTasks[] = [
                     'label' => 'Enable', // 'SITE_ENABLE',
                     'url' => '/new_task/SITE_ENABLE/' . $site->getId(),
@@ -316,6 +324,11 @@ class FactoryController extends AbstractController
                 'icon' => 'clone'
             ];
             $availableTasks[] = [
+                    'label' => 'EDIT SITE', // 'SITE_EDIT',
+                    'url' => '/site/' . $site->getId() . '/edit',
+                    'icon' => 'update'
+            ];
+            $availableTasks[] = [
                 'label' => 'Disable', // 'SITE_DISABLE',
                 'url' => '/new_task/SITE_DISABLE/' . $site->getId(),
                 'icon' => 'desactivate'
@@ -380,6 +393,82 @@ class FactoryController extends AbstractController
         }
 
         return $this->render('factory/site_add.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/site/{id}/edit', name: 'app_edit_site', methods: ['GET', 'POST'])]
+    public function editSite(Request $request, ManagerRegistry $doctrine, TaskBufferManager $taskBufferManager, int $id): Response
+    {
+        // Load sites from the Remote database
+        $remoteEntityManager = $doctrine->getManager('remote');
+
+        /** @var Site[] $sites */
+        //$sites = $remoteEntityManager->getRepository(Site::class)->findAll();
+
+        $site = $remoteEntityManager->getRepository(Site::class)->find($id);
+
+        if ($site === null) {
+            $this->addFlash('error', 'Site ' . $id . ' not found!');
+            return $this->redirectToRoute('app_sites');
+        }
+
+        //Create a Site object to use in the form only.
+        //keep the Doctrine object intact at this stage
+        $formSite = new Site();
+        $formSite->setName($site->getName());
+        $formSite->setDomain($site->getDomain());
+        foreach ($site->getAliases() as $existingAlias) {
+            $alias = new Alias();
+            $alias->setDomain($existingAlias->getDomain());
+
+            $formSite->addAlias($alias);
+        }
+
+        $form = $this->createForm(SiteEditType::class, $formSite, [
+            'action' => $this->generateUrl('app_edit_site', [
+                'id' => $site->getId(),
+            ]),
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('factory/site_edit.html.twig', [
+                'form' => $form,
+            ]);
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $form->getData() holds the submitted values
+
+            // Remove all occurrences of 'http://' and 'https://' from aliases
+            // if (strpos($domain, 'http://') === 0 || strpos($domain, 'https://') === 0) {
+            //     $domain = preg_replace('/https?:\/\//', '', $domain);
+            // }
+
+            $aliases = [];
+
+            foreach ($formSite->getAliases() as $alias) {
+                $domain = trim((string) $alias->getDomain());
+
+                if ($domain !== '') {
+                    $aliases[] = $domain;
+                }
+            }
+
+            $taskBufferManager->editSite(
+                $site->getId(),
+                $formSite->getName(),
+                $aliases,
+            );
+
+            $this->addFlash('success', 'Edit Site Task created successfully!');
+
+            return $this->redirectToRoute('app_sites');
+        }
+
+        return $this->render('factory/site_edit.html.twig', [
             'form' => $form,
         ]);
     }

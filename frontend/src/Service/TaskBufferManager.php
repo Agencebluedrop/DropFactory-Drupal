@@ -48,6 +48,23 @@ class TaskBufferManager
         $remoteEntityManager->flush();
     }
 
+    public function editSite(int $siteId, string $name, array $aliases)
+    {
+        // Create a new task in the buffer
+        $taskBuffer = new TaskBuffer();
+        $taskBuffer->setAction("SITE_EDIT");
+        $taskBuffer->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris")));
+        $taskBuffer->setParameters([
+            'resourceId' => $siteId,
+            'name' => $name,
+            'aliases' => $aliases,
+        ]);
+
+        $remoteEntityManager = $this->doctrine->getManager('remote');
+        $remoteEntityManager->persist($taskBuffer);
+        $remoteEntityManager->flush();
+    }
+
     public function newTask(string $taskName, int $resourceId)
     {
         // Create a new task in the buffer
