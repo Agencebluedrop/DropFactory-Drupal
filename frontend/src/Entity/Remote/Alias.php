@@ -51,6 +51,6 @@ class Alias
 
     public function __toString(): string
     {
-        return $this->domain;
+        return (string) $this->domain;
     }
 }

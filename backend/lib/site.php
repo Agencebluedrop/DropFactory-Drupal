@@ -20,7 +20,7 @@ class Site
     protected String $site_platform;
     protected Int    $site_platform_id;
     protected String $site_domain;
-    protected Array  $site_serveraliases;
+    protected Array  $site_serveraliases = [];
     protected Int    $site_profile_id;
     protected String $site_language;
     protected String $site_status = 'DISABLED';
@@ -76,6 +76,7 @@ class Site
      * @param String $domain      The main domain used by the website
      * @param int    $profile_id  The profile id of the platform to use
      * @param String $language    The language to use (ex: 'fr', 'en')
+     * @param Array  $aliases     The site domain aliases (server aliases)
      *
      * @return Site The newly created site
      */
@@ -83,11 +84,13 @@ class Site
         int $platform_id,
         String $domain,
         int $profile_id,
-        String $language
+        String $language,
+        array $aliases = []
     ) : Site {
 
         $site = new site($name, $platform_id, $domain, $profile_id, $language);
         $site->insert();
+        $site->set_aliases($aliases);
         $site->create();
         $site->set_enabled();
 
@@ -269,12 +272,16 @@ class Site
     {
         echo "Creating the site with my little hands\n";
 
+        $site_domains = array_merge([$this->site_domain], $this->site_serveraliases);
+
         $this->ansible = new Ansible("site_add.yml");
         $this->ansible->add_var("dropfactory_site_platform", $this->site_platform);
         $this->ansible->add_var("dropfactory_site_platform_id", $this->site_platform_id);
         $this->ansible->add_var("dropfactory_site_platform_user", "platform_".$this->site_platform_id);
         $this->ansible->add_var("dropfactory_site_id", $this->site_id);
-        $this->ansible->add_var("dropfactory_site_domain", array($this->site_domain));
+        $this->ansible->add_var("dropfactory_site_domain", $site_domains);
+        $this->ansible->add_var("dropfactory_site_main_domain", $this->site_domain);
+        $this->ansible->add_var("dropfactory_site_aliases", $this->site_serveraliases);
         $this->ansible->add_var("dropfactory_site_profile_name", $this->get_profile_name());
         $this->ansible->add_var("dropfactory_site_db", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
@@ -358,19 +365,22 @@ class Site
         $this->site_admin_password_reset_url = $logs->plays[0]->tasks[1]->hosts->localhost->stdout;
     }
 
+    /**
+     * Edit a site : update its name and aliases (database), then
+     * reconfigure the system (vhost + Drupal multisite) with Ansible.
+     *
+     * The Ansible reconfiguration only runs if the database changes were
+     * committed successfully, to avoid a divergence between the database
+     * and the system.
+     *
+     * @param String $name    The new site name
+     * @param Array  $aliases The site domain aliases
+     *
+     * @return void
+     */
     function edit(string $name, array $aliases): void
     {
-        $aliases = array_values(
-            array_unique(
-                array_filter(
-                    array_map(
-                        static fn ($alias) => trim((string) $alias),
-                        $aliases
-                    ),
-                    fn ($alias) => $alias !== '' && $alias !== $this->site_domain
-                )
-            )
-        );
+        $aliases = $this->normalize_aliases($aliases);
 
         DB::$pdo->beginTransaction();
 
@@ -386,34 +396,19 @@ class Site
             ]);
             $this->site_name = $name;
 
-            $stmt = DB::$pdo->prepare('DELETE FROM `Alias` WHERE site_id = :site_id');
-            $stmt->execute(['site_id' => $this->site_id]);
-
-            $stmt = DB::$pdo->prepare('
-                INSERT INTO `Alias` (site_id, domain)
-                VALUES (:site_id, :domain)
-            ');
-
-            foreach ($aliases as $alias) {
-                $alias = trim($alias);
-                if ($alias === '') {
-                    continue;
-                }
-
-                $stmt->execute([
-                    'site_id' => $this->site_id,
-                    'domain' => $alias,
-                ]);
-            }
+            $this->delete_aliases();
+            $this->insert_aliases($aliases);
 
             DB::$pdo->commit();
-
-            //$this->logs[] = 'Site edited successfully.';
         } catch (\Throwable $e) {
             DB::$pdo->rollBack();
-            //$this->ansible_status = false;
-            //$this->logs[] = $e->getMessage();
+            throw new RuntimeException(
+                'Failed to edit site in database: ' . $e->getMessage(),
+                0,
+                $e
+            );
         }
+
         echo "Updating site configuration with Ansible\n";
 
         $this->site_serveraliases = $aliases;
@@ -434,6 +429,72 @@ class Site
             "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
 
         $this->ansible->run();
+    }
+
+    /**
+     * Normalize a list of aliases : trim, drop empty values and the main
+     * domain, and remove duplicates.
+     *
+     * @param Array $aliases The raw aliases
+     *
+     * @return Array The normalized aliases
+     */
+    private function normalize_aliases(array $aliases): array
+    {
+        return array_values(
+            array_unique(
+                array_filter(
+                    array_map(static fn ($alias) => trim((string) $alias), $aliases),
+                    fn ($alias) => $alias !== '' && $alias !== $this->site_domain
+                )
+            )
+        );
+    }
+
+    /**
+     * Persist the given aliases for the current site in the database.
+     *
+     * @param Array $aliases The (normalized) aliases to insert
+     *
+     * @return void
+     */
+    private function insert_aliases(array $aliases): void
+    {
+        $stmt = DB::$pdo->prepare('
+            INSERT INTO `Alias` (site_id, domain)
+            VALUES (:site_id, :domain)
+        ');
+
+        foreach ($aliases as $alias) {
+            $stmt->execute([
+                'site_id' => $this->site_id,
+                'domain' => $alias,
+            ]);
+        }
+    }
+
+    /**
+     * Remove every alias tied to the current site from the database.
+     *
+     * @return void
+     */
+    private function delete_aliases(): void
+    {
+        $stmt = DB::$pdo->prepare('DELETE FROM `Alias` WHERE site_id = :site_id');
+        $stmt->execute(['site_id' => $this->site_id]);
+    }
+
+    /**
+     * Normalize and persist the site aliases (used at creation time).
+     *
+     * @param Array $aliases The raw aliases
+     *
+     * @return void
+     */
+    function set_aliases(array $aliases): void
+    {
+        $this->site_serveraliases = $this->normalize_aliases($aliases);
+        $this->insert_aliases($this->site_serveraliases);
     }
 
     /**

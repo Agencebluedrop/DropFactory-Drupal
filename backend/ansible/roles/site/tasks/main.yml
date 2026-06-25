@@ -6,3 +6,6 @@
     cmd: "umask 027; ~/platform/vendor/bin/drush site:install {{dropfactory_site_profile_name}} --sites-subdir='{{ dropfactory_site_domain[0] }}' --db-url='mysql://{{ dropfactory_site_db }}:{{ dropfactory_site_db_password.stdout }}@{{ dropfactory_site_database_host  }}/{{ dropfactory_site_db }}?module=mysql#drupal-{{ dropfactory_site_id }}_' --yes"
   become: true
   become_user: "{{ dropfactory_site_platform_user }}"
+
+- name: Register Drupal multisite aliases
+  ansible.builtin.include_tasks: register_aliases.yml

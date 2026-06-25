@@ -239,7 +239,8 @@ class Task
                     $this->tasks_buffer_parameters->platformId,
                     $this->tasks_buffer_parameters->domain,
                     $this->tasks_buffer_parameters->installProfileId,
-                    $this->tasks_buffer_parameters->language
+                    $this->tasks_buffer_parameters->language,
+                    $this->tasks_buffer_parameters->aliases ?? []
                 );
                 $this->set_source_entity($site->get_id());
 

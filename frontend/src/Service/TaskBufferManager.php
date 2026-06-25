@@ -29,7 +29,7 @@ class TaskBufferManager
         $remoteEntityManager->flush();
     }
 
-    public function newSite(int $platformId, string $name, string $domain, int $installProfileId, string $language)
+    public function newSite(int $platformId, string $name, string $domain, int $installProfileId, string $language, array $aliases = [])
     {
         // Create a new task in the buffer
         $taskBuffer = new TaskBuffer();
@@ -41,6 +41,7 @@ class TaskBufferManager
             'domain' => $domain,
             'installProfileId' => $installProfileId,
             'language' => $language,
+            'aliases' => $aliases,
         ]);
 
         $remoteEntityManager = $this->doctrine->getManager('remote');

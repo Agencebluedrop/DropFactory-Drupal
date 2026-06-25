@@ -74,7 +74,13 @@
 {# code copied to use the functionnality "tagging" in a textfield
    used for Aliases field
    Widget is "tags" and each tag becomes a value added to a hidden symfony field.
+   Shared between the "add site" (block prefix "site") and "edit site"
+   (block prefix "site_edit") forms.
 #}
+{%- block _site_aliases_widget -%}
+    {{ block('_site_edit_aliases_widget') }}
+{%- endblock _site_aliases_widget -%}
+
 {%- block _site_edit_aliases_widget -%}
     {% set prototype %}
         {% if form.vars.prototype is defined %}
@@ -127,4 +133,8 @@
             placeholder="Add a tag and press Enter"
         >
     </div>
+
+    {% for aliasForm in form %}
+        {{ form_errors(aliasForm.domain) }}
+    {% endfor %}
 {%- endblock _site_edit_aliases_widget -%}

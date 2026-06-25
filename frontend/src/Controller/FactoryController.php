@@ -379,12 +379,23 @@ class FactoryController extends AbstractController
                 $domain = preg_replace('/https?:\/\//', '', $domain);
             }
 
+            $aliases = [];
+
+            foreach ($site->getAliases() as $alias) {
+                $aliasDomain = trim((string) $alias->getDomain());
+
+                if ($aliasDomain !== '') {
+                    $aliases[] = $aliasDomain;
+                }
+            }
+
             $taskBufferManager->newSite(
                 $site->getPlatform()->getId(),
                 $site->getName(),
                 $domain,
                 $site->getInstallProfile()->getId(),
-                $site->getLanguage()
+                $site->getLanguage(),
+                $aliases
             );
 
             $this->addFlash('success', 'New Site Task created successfully!');

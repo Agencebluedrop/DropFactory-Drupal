@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Form\AliasType;
 use App\Entity\Remote\Site;
 use App\Entity\Remote\Alias;
 use App\Entity\Remote\Profile;
@@ -25,7 +26,15 @@ class SiteType extends AbstractType
         $builder
             ->add('name')
             ->add('domain')
-            // ->add('aliases')
+            ->add('aliases', CollectionType::class, [
+                'entry_type' => AliasType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false, //so that Symfony uses $site->addAlias and $site->removeAlias
+                'prototype' => true,
+                'label' => 'Aliases',
+                'required' => false,
+            ])
             ->add('platform', EntityType::class, [
                 'class' => Platform::class,
                 'choice_label' => 'name',
