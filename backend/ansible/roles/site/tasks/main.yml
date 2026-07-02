@@ -7,5 +7,7 @@
   become: true
   become_user: "{{ dropfactory_site_platform_user }}"
 
+#use the ansible core module "include tasks" to include the file
+#register_aliases.yml and execute its tasks in the current playbook.
 - name: Register Drupal multisite aliases
   ansible.builtin.include_tasks: register_aliases.yml

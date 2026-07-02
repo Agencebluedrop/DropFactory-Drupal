@@ -18,6 +18,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 class SiteType extends AbstractType
 {
@@ -25,7 +28,14 @@ class SiteType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('domain')
+            ->add('domain', TextType::class, [
+                'constraints' => [
+                    new Assert\Hostname(
+                        message: 'The alias "{{ value }}" is not a valid domain name.',
+                        requireTld: true,
+                    ),
+                ],
+            ])
             ->add('aliases', CollectionType::class, [
                 'entry_type' => AliasType::class,
                 'allow_add' => true,
@@ -74,7 +84,7 @@ class SiteType extends AbstractType
         };
 
         $builder->addEventListener(
-            FormEvents::POST_SET_DATA, 
+            FormEvents::POST_SET_DATA,
             function (FormEvent $event) use ($formModifier) : void {
                 // this would be your entity, i.e. Site
                 /** @var Site $data */
