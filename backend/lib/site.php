@@ -9,6 +9,8 @@
  * @author  Ludovic Poujol <lpoujol@evolix.fr>
  * @author  Gregory Colpart <reg@evolix.fr>
  * @author  Evolix <info@evolix.fr>
+ * @author  Elie Choufani <echoufani@bluedrop.fr>
+ * @author  Bluedrop.fr <contact@bluedrop.fr>
  * @license TODO
  * @link    TODO
  */
