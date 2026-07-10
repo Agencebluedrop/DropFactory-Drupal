@@ -1,6 +1,6 @@
 # DropFactory
 
-Dropfactory is a solution designed to simplify the deployment and management of multiple Drupal websites. It provides a unique and intuitive interface that allows you to manage your entire portfolio of sites without any coding required. This centralized approach enables teams to focus on content creation and user experience, rather than the technical complexities of managing multiple Drupal installations.
+DropFactory is a solution designed to simplify the deployment and management of multiple Drupal websites. It provides a unique and intuitive interface that allows you to manage your entire portfolio of sites without any coding required. This centralized approach enables teams to focus on content creation and user experience, rather than the technical complexities of managing multiple Drupal installations.
 
 **Project Objective**
 
@@ -20,25 +20,28 @@ The DropFactory project is the result of a collaboration between two partners ac
 
 ## Install
 
-On a brand new Debian 12/13 system.
+Install DropFactory on a fresh Debian system.
+This system will run the DropFactory management interface **and** the created platform/sites. It's possible to move the SQL database to a separate, dedicated host (see the *Special uses* section at the end.)
 
 Requirements :
 
-* GNU/Linux Debian 12 (Bookworm) or 13 (Trixie) system dedicated to DropFactory
+* GNU/Linux Debian 13 (Trixie) system dedicated to DropFactory (Can work with 12 (Bookworm) - Use deb.sury.org to have PHP 8.4 )
 * Nginx
-* MariaDB
-* PHP-FPM 8.4 (from deb.sury.org on Debian 12 systems - Debian 13 runs with PHP8.4)
-*
-* Composer - install PHP dependencies for the DropFactory frontend and for Drupal platforms managed by
-* DropFactory. Drupal platforms must have their Composer dependencies installed before sites are created,
-* otherwise commands such as Drush may be unavailable.
-*
-* NodeJS 22 (from NodeSource repositories)
-* ansible (`apt install ansible`)
-* certbot (`apt install certbot`)
-* Python 3 PyMySQL module (`apt install python3-pymysql` or `apt install python3-mysqldb`)
+* MariaDB - (`/root/.my.cnf` should be enough to connect to the database as administrator (for DropFactory to create new sites))
+* PHP-FPM 8.4
+* A sendmail-compatible MTA (`msmtp-mta`, `postfix`, or equivalent)
+* Ansible and modules dependencies (`apt install ansible python3-mysqldb`)
+* Composer & NodeJS 22 (from NodeSource repositories)
+* Certbot (`apt install certbot`)
 * APG password generator (`apt install apg`)
-* Sendmail-compatible MTA (`msmtp-mta`, `postfix`, or equivalent)
+
+> *Note*: On Composer. It's here to install PHP dependencies for the DropFactory frontend and for Drupal platforms managed by DropFactory
+> Drupal platforms must have their Composer dependencies installed before sites are created, otherwise commands such as Drush may be unavailable.
+
+> *Note*: On SSL certificates for HTTPS. In it's curent state, DropFactory does not handle SSL/TLS certificate managemen for the sites created with it.
+> You'll have to handle it yourself, with a front facing load-balancer that will handle certificate generation/renewal and TLS offloading
+
+
 
 System settings :
 
@@ -53,7 +56,7 @@ System settings :
 # echo "DIR_MODE=0750" >> /etc/adduser.conf
 ~~~
 
-Create UNIX accounts :
+Create UNIX accounts for DropFactory : 
 
 ~~~
 # adduser --disabled-password dropfactory
@@ -62,13 +65,12 @@ Create UNIX accounts :
 # adduser www-data dropfactory
 ~~~
 
-> *Note*: Here, the complete Dropfactory system is deployed inside one UNIX account (with a separate one for PHP execution).
+> *Note*: Here, the complete DropFactory system is deployed inside one UNIX account (with a separate one for PHP execution).
 > It's also possible to deploy to separate UNIX account the frontend and backend sides. Even on a different server as long as they both
 > Use the same MySQL host
 
 
-
-Ensure the backend will be able to SSH as root localy :
+Ensure the backend will be able to SSH as root localy (this is needed for Ansible, so DropFactory can configure the server services) :
 
 ~~~
 # su - dropfactory
@@ -102,7 +104,7 @@ Fetch the code :
 $ git clone https://github.com/Agencebluedrop/DropFactory-Drupal.git dropfactory
 ~~~
 
-Create the databases & their users :
+Create the databases & their users (with a strong and random password) :
 
 ~~~
 # mysqladmin create dropfactory_backend
@@ -116,8 +118,10 @@ MariaDB [(none)]> GRANT SELECT on dropfactory_backend.* TO 'dropfactory_frontend
 MariaDB [(none)]> GRANT INSERT on dropfactory_backend.TaskBuffer TO 'dropfactory_frontend'@'localhost';
 ~~~
 
-> *Note*: Depending on your MariaDB version, the specific grants for dropfactory_frontend user on the table dropfactory_backend.TaskBuffer
+> *Warning*: Depending on your MariaDB version, the specific grants for dropfactory_frontend user on the table dropfactory_backend.TaskBuffer
 > may not work before creating the table in the database :'(
+
+> *Note*: If you plan on having the SQL database for DropFactory running on a separate host, you'll need to adapt the `GRANT` queries.
 
 Configure the DropFactory (SQL Credentials, SSH Keys...) :
 
@@ -366,3 +370,19 @@ Enable the backend crontab to treat jobs :
 $ crontab -e
 */5 *  *   *   *     cd /home/dropfactory/dropfactory/backend/; date >> /var/log/dropfactory_output.log; php cron.php 2>&1 >> /var/log/dropfactory_output.log
 ~~~
+
+
+## Special uses/deployments
+
+### Having a separate server for MariaDB
+
+It's possible to install DropFactory with a separate server for the MariaDB database.
+
+Two ways :
+* For a complex setup (More than 1 MariaDB server, for High Availability / Replication), you may use an intermediate service as a proxy that will direct the SQL connections to the *Primary* like HAProxy, SQLProxy etc. Either locally (on the webserver), or via a dedicated proxy host.
+* For a simple, one database server setup, you can point directly the sites to the database itself
+
+DropFactory operations on databases are done with *Ansible*. And *Ansible* itself will rely on the `/root/.my.cnf` from the host.
+
+For the websites, by default, while MariaDB accounts are created without any restrictions (*%* host) for each site. 
+The sites will use `localhost`. This settings can be changed with `dropfactory_site_database_host` variable (in `backend/ansible/vars/main.yml`). MariaDB accounts created with each site don't have any host restrictions
