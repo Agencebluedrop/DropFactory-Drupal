@@ -35,10 +35,12 @@ Requirements :
 * Certbot (`apt install certbot`)
 * APG password generator (`apt install apg`)
 
-> *Note*: On Composer. It's here to install PHP dependencies for the DropFactory frontend and for Drupal platforms managed by DropFactory
+> *Note*: 
+> On Composer. It's here to install PHP dependencies for the DropFactory frontend and for Drupal platforms managed by DropFactory
 > Drupal platforms must have their Composer dependencies installed before sites are created, otherwise commands such as Drush may be unavailable.
 
-> *Note*: On SSL certificates for HTTPS. In it's curent state, DropFactory does not handle SSL/TLS certificate managemen for the sites created with it.
+> *Note*: 
+> On SSL certificates for HTTPS. In it's curent state, DropFactory does not handle SSL/TLS certificate managemen for the sites created with it.
 > You'll have to handle it yourself, with a front facing load-balancer that will handle certificate generation/renewal and TLS offloading
 
 
@@ -65,7 +67,8 @@ Create UNIX accounts for DropFactory :
 # adduser www-data dropfactory
 ~~~
 
-> *Note*: Here, the complete DropFactory system is deployed inside one UNIX account (with a separate one for PHP execution).
+> *Note*: 
+> Here, the complete DropFactory system is deployed inside one UNIX account (with a separate one for PHP execution).
 > It's also possible to deploy to separate UNIX account the frontend and backend sides. Even on a different server as long as they both
 > Use the same MySQL host
 
@@ -118,10 +121,12 @@ MariaDB [(none)]> GRANT SELECT on dropfactory_backend.* TO 'dropfactory_frontend
 MariaDB [(none)]> GRANT INSERT on dropfactory_backend.TaskBuffer TO 'dropfactory_frontend'@'localhost';
 ~~~
 
-> *Warning*: Depending on your MariaDB version, the specific grants for dropfactory_frontend user on the table dropfactory_backend.TaskBuffer
+> *Warning*: 
+> Depending on your MariaDB version, the specific grants for dropfactory_frontend user on the table dropfactory_backend.TaskBuffer
 > may not work before creating the table in the database :'(
 
-> *Note*: If you plan on having the SQL database for DropFactory running on a separate host, you'll need to adapt the `GRANT` queries.
+> *Note*: 
+> If you plan on having the SQL database for DropFactory running on a separate host, you'll need to adapt the `GRANT` queries.
 
 Configure the DropFactory (SQL Credentials, SSH Keys...) :
 
