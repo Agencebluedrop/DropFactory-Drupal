@@ -285,6 +285,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_main_domain", $this->site_domain);
         $this->ansible->add_var("dropfactory_site_aliases", $this->site_serveraliases);
         $this->ansible->add_var("dropfactory_site_profile_name", $this->get_profile_name());
+        $this->ansible->add_var("dropfactory_site_language", strtolower($this->site_language));
         $this->ansible->add_var("dropfactory_site_db", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->run();
