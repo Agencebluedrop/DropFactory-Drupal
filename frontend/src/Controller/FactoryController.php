@@ -243,6 +243,7 @@ class FactoryController extends AbstractController
                     ]),
                     'siteUrl' => $site->getProtocol() . $site->getDomain(),
                     'installProfile' => $site->getInstallProfile()->getName(),
+                    'platformName' => $site->getPlatform()->getName(),
                     'availableTasks' => $availableTasks,
                 ]];
 
@@ -256,6 +257,7 @@ class FactoryController extends AbstractController
                     'siteUrl' => $site->getProtocol() . $site->getDomain(),
                     'image' => $site->getImage() ?? 'default.jpg',
                     'installProfile' => $site->getInstallProfile()->getName(),
+                    'platformName' => $site->getPlatform()->getName(),
                     'availableTasks' => $availableTasks,
                 ];
             }
