@@ -391,13 +391,19 @@ class FactoryController extends AbstractController
                 }
             }
 
+            $htpasswd = $form->get('htpasswd')->getData() ?? [];
+            $htpasswdUsername = trim((string) ($htpasswd['username'] ?? ''));
+            $htpasswdPassword = (string) ($htpasswd['password'] ?? '');
+
             $taskBufferManager->newSite(
                 $site->getPlatform()->getId(),
                 $site->getName(),
                 $domain,
                 $site->getInstallProfile()->getId(),
                 $site->getLanguage(),
-                $aliases
+                $aliases,
+                $htpasswdUsername !== '' ? $htpasswdUsername : null,
+                $htpasswdUsername !== '' ? $htpasswdPassword : null,
             );
 
             $this->addFlash('success', 'New Site Task created successfully!');
@@ -470,10 +476,16 @@ class FactoryController extends AbstractController
                 }
             }
 
+            $htpasswd = $form->get('htpasswd')->getData() ?? [];
+            $htpasswdUsername = trim((string) ($htpasswd['username'] ?? ''));
+            $htpasswdPassword = (string) ($htpasswd['password'] ?? '');
+
             $taskBufferManager->editSite(
                 $site->getId(),
                 $formSite->getName(),
                 $aliases,
+                $htpasswdUsername !== '' ? $htpasswdUsername : null,
+                $htpasswdUsername !== '' ? $htpasswdPassword : null,
             );
 
             $this->addFlash('success', 'Edit Site Task created successfully!');

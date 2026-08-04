@@ -138,3 +138,25 @@
         {{ form_errors(aliasForm.domain) }}
     {% endfor %}
 {%- endblock _site_edit_aliases_widget -%}
+
+{%- block _site_htpasswd_row -%}
+    {{ block('_site_edit_htpasswd_row') }}
+{%- endblock _site_htpasswd_row -%}
+
+{%- block _site_edit_htpasswd_row -%}
+    {% set labelClasses = 'block text-brand-secondary text-xs uppercase font-bold mb-2' %}
+    <fieldset class="bluedrop-row mt-6">
+        {% if form.vars.label is not same as(false) -%}
+            <legend class="{{ labelClasses }}">
+                {%- if translation_domain is same as(false) -%}
+                    {{- form.vars.label -}}
+                {%- else -%}
+                    {{- form.vars.label|trans(form.vars.label_translation_parameters, translation_domain) -}}
+                {%- endif -%}
+            </legend>
+        {%- endif %}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+        {{ form_help(form) }}
+    </fieldset>
+{%- endblock _site_edit_htpasswd_row -%}

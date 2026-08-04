@@ -29,7 +29,7 @@ class TaskBufferManager
         $remoteEntityManager->flush();
     }
 
-    public function newSite(int $platformId, string $name, string $domain, int $installProfileId, string $language, array $aliases = [])
+    public function newSite(int $platformId, string $name, string $domain, int $installProfileId, string $language, array $aliases = [], ?string $htpasswdUsername = null, ?string $htpasswdPassword = null)
     {
         // Create a new task in the buffer
         $taskBuffer = new TaskBuffer();
@@ -42,6 +42,8 @@ class TaskBufferManager
             'installProfileId' => $installProfileId,
             'language' => $language,
             'aliases' => $aliases,
+            'htpasswdUsername' => $htpasswdUsername,
+            'htpasswdPassword' => $htpasswdPassword,
         ]);
 
         $remoteEntityManager = $this->doctrine->getManager('remote');
@@ -49,7 +51,7 @@ class TaskBufferManager
         $remoteEntityManager->flush();
     }
 
-    public function editSite(int $siteId, string $name, array $aliases)
+    public function editSite(int $siteId, string $name, array $aliases, ?string $htpasswdUsername = null, ?string $htpasswdPassword = null)
     {
         // Create a new task in the buffer
         $taskBuffer = new TaskBuffer();
@@ -59,6 +61,8 @@ class TaskBufferManager
             'resourceId' => $siteId,
             'name' => $name,
             'aliases' => $aliases,
+            'htpasswdUsername' => $htpasswdUsername,
+            'htpasswdPassword' => $htpasswdPassword,
         ]);
 
         $remoteEntityManager = $this->doctrine->getManager('remote');

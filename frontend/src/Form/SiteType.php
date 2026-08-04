@@ -4,10 +4,8 @@ namespace App\Form;
 
 use App\Form\AliasType;
 use App\Entity\Remote\Site;
-use App\Entity\Remote\Alias;
 use App\Entity\Remote\Profile;
 use App\Entity\Remote\Platform;
-use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
@@ -18,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -64,6 +63,22 @@ class SiteType extends AbstractType
                     'English' => 'EN',
                     'Spanish' => 'ES',
                 ],
+            ])
+            ->add('htpasswd', FormType::class, [
+                'label' => 'HTTP authentication (htpasswd)',
+                'mapped' => false,
+                'required' => false,
+            ])
+        ;
+
+        $builder->get('htpasswd')
+            ->add('username', TextType::class, [
+                'label' => 'Username',
+                'required' => false,
+            ])
+            ->add('password', TextType::class, [
+                'label' => 'Password',
+                'required' => false,
             ])
         ;
 

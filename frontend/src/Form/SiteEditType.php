@@ -3,9 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Remote\Site;
-use App\Entity\Remote\Alias;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,6 +29,22 @@ class SiteEditType extends AbstractType
                 'by_reference' => false, //so that Symfony uses $site->addAlias and $site->removeAlias
                 'prototype' => true,
                 'label' => 'Aliases',
+                'required' => false,
+            ])
+            ->add('htpasswd', FormType::class, [
+                'label' => 'HTTP authentication (htpasswd)',
+                'mapped' => false,
+                'required' => false,
+            ])
+        ;
+
+        $builder->get('htpasswd')
+            ->add('username', TextType::class, [
+                'label' => 'Username',
+                'required' => false,
+            ])
+            ->add('password', TextType::class, [
+                'label' => 'Password',
                 'required' => false,
             ])
         ;
