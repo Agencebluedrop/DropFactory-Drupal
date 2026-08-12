@@ -1,4 +1,8 @@
 ---
+# before the site:install task, so that the folder exists
+# from the begining of the Drupal site.
+- name: Prepare the site private files directory
+  ansible.builtin.include_tasks: private_files.yml
 
 - name: Create site
   ansible.builtin.shell:

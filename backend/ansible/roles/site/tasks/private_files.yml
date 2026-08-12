@@ -1,0 +1,23 @@
+---
+
+# The parent directory is created first, so that it doesn't inherit the permissions
+# by default.
+- name: Create the platform private files directory
+  ansible.builtin.file:
+    path: "/home/{{ dropfactory_site_platform_user }}/private"
+    state: directory
+    owner: "{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "0750"
+
+#The directory is owned by the PHP-FPM user, as Drupal is the one writing the
+#private files. The setgid bit makes the created files inherit the platform
+#group, so Drush and the backups can still read them.
+- name: Create the site private files directory
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_private_path }}"
+    state: directory
+    owner: "www-{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "2750"
+  when: dropfactory_site_domain[0] | length > 0

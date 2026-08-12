@@ -1,3 +1,8 @@
 ---
+#Included here too, so sites created before this feature existed get their
+#private files directory on their next edition.
+- name: Prepare the site private files directory
+  ansible.builtin.include_tasks: private_files.yml
+
 - name: Register Drupal multisite aliases
   ansible.builtin.include_tasks: register_aliases.yml

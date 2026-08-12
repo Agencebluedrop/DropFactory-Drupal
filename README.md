@@ -391,3 +391,21 @@ DropFactory operations on databases are done with *Ansible*. And *Ansible* itsel
 
 For the websites, by default, while MariaDB accounts are created without any restrictions (*%* host) for each site. 
 The sites will use `localhost`. This settings can be changed with `dropfactory_site_database_host` variable (in `backend/ansible/vars/main.yml`). MariaDB accounts created with each site don't have any host restrictions
+
+### Drupal private files
+
+At site creation, DropFactory creates a directory dedicated to the site private files :
+
+~~~
+/home/platform_<PLATFORM_ID>/private/<SITE_MAIN_DOMAIN>/
+~~~
+
+It's located outside of the platform web root, so nginx can't serve it, and outside of the platform git clone, so it survives platform redeployments. It's owned by the PHP-FPM user of the platform and it's included in the site backups.
+
+DropFactory does **not** write in the `settings.php` of the sites : that file is generated and made read-only by the Drupal installer. The platform has to declare the directory itself. As the path follows a convention, it can be derived without any DropFactory specific variable :
+
+~~~php
+$settings['file_private_path'] = dirname($app_root, 2) . '/private/' . basename($site_path);
+~~~
+
+Place it in a file of the platform repository that gets included by the `settings.php` of the sites. A convenient way is to append such an include to `web/sites/default/default.settings.php`, as the Drupal installer copies that file for each new site.

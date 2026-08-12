@@ -40,3 +40,19 @@
     group: "{{ dropfactory_site_platform_user }}"
     mode: "0640"
   when: dropfactory_site_domain[0] | length > 0
+
+#Sites created before the private files feature don't have that directory
+- name: Check site private files directory
+  ansible.builtin.stat:
+    path: "{{ dropfactory_site_private_path }}"
+  register: dropfactory_site_private_stat
+
+- name: Archive site private files
+  community.general.archive:
+    path: "{{ dropfactory_site_private_path }}"
+    dest: "{{ dropfactory_site_backup_dir }}/private-folder.tar.gz"
+    format: gz
+    owner: "{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "0640"
+  when: dropfactory_site_private_stat.stat.exists

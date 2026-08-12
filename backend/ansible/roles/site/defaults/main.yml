@@ -1,0 +1,7 @@
+---
+
+# Path of the site private files directory (Drupal `file_private_path`)
+#
+# It sits outside of the platform web root, so nginx can't serve it, and
+# outside of the platform git clone, so it survives platform redeployments.
+dropfactory_site_private_path: "/home/{{ dropfactory_site_platform_user }}/private/{{ dropfactory_site_domain[0] }}"

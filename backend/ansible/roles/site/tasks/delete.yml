@@ -4,3 +4,10 @@
     path: "/home/{{ dropfactory_site_platform_user }}/platform/web/sites/{{ dropfactory_site_domain[0] }}"
     state: absent
   when: dropfactory_site_domain[0] | length > 0
+
+#The content has been archived by backup.yml, which site_delete.yml runs first.
+- name: Delete site private files directory
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_private_path }}"
+    state: absent
+  when: dropfactory_site_domain[0] | length > 0
