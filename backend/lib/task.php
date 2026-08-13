@@ -53,6 +53,9 @@ class Task
 
     /**
      * Insert the task into the Task table
+     *
+     * Unlike the buffer, this table is an archive that is never purged, so the
+     * secrets carried by the task are redacted before being stored.
      */
     function insert() : void
     {
@@ -67,10 +70,29 @@ class Task
             ['created_at' => $this->tasks_buffer_created_at->format("Y-m-d H:i:s"),
                         'status' => $this->task_status,
                         'action' => $this->tasks_buffer_action,
-            'parameters' => json_encode($this->tasks_buffer_parameters)]
+            'parameters' => json_encode($this->redact_parameters())]
         );
 
         $this->task_id = DB::$pdo->lastInsertId();
+    }
+
+    /**
+     * Return a copy of the buffer parameters with the secrets replaced by a
+     * placeholder. The object handed to the task itself is left untouched.
+     *
+     * @return stdClass The parameters, safe to archive
+     */
+    private function redact_parameters() : stdClass
+    {
+        $parameters = clone $this->tasks_buffer_parameters;
+
+        foreach (['htpasswdPassword'] as $secret) {
+            if (isset($parameters->$secret)) {
+                $parameters->$secret = '********';
+            }
+        }
+
+        return $parameters;
     }
 
     /**
@@ -240,7 +262,9 @@ class Task
                     $this->tasks_buffer_parameters->domain,
                     $this->tasks_buffer_parameters->installProfileId,
                     $this->tasks_buffer_parameters->language,
-                    $this->tasks_buffer_parameters->aliases ?? []
+                    $this->tasks_buffer_parameters->aliases ?? [],
+                    $this->tasks_buffer_parameters->htpasswdUsername ?? null,
+                    $this->tasks_buffer_parameters->htpasswdPassword ?? null
                 );
                 $this->set_source_entity($site->get_id());
 
@@ -330,7 +354,9 @@ class Task
                 $site = Site::task_edit(
                     $this->tasks_buffer_parameters->resourceId,
                     $name,
-                    $this->tasks_buffer_parameters->aliases ?? []
+                    $this->tasks_buffer_parameters->aliases ?? [],
+                    $this->tasks_buffer_parameters->htpasswdUsername ?? null,
+                    $this->tasks_buffer_parameters->htpasswdPassword ?? null
                 );
                 $this->set_source_entity($site->get_id());
 

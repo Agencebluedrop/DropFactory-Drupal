@@ -409,3 +409,30 @@ $settings['file_private_path'] = dirname($app_root, 2) . '/private/' . basename(
 ~~~
 
 Place it in a file of the platform repository that gets included by the `settings.php` of the sites. A convenient way is to append such an include to `web/sites/default/default.settings.php`, as the Drupal installer copies that file for each new site.
+
+### HTTP authentication (htpasswd)
+
+A site can be put behind an HTTP basic authentication, typically to keep a site under construction away from the public and from the search engines. The credentials are filled in the site creation and edition forms.
+
+The password is hashed with bcrypt by the backend : only the hash travels to the server, in this file :
+
+~~~
+/etc/nginx/htpasswd/platform_<PLATFORM_ID>_site_<SITE_ID>
+~~~
+
+Nothing is stored in the DropFactory database. **That file is the reference** : its presence is what tells whether a site is protected, and the vhost is rendered accordingly at each update. Leaving the credentials empty therefore changes nothing, which is what keeps a rename or an alias change from silently dropping an existing protection.
+
+The `/.well-known/` URIs are left out of the authentication, so the ACME challenges can still issue the certificates of a protected site.
+
+The file is removed automatically when the site is deleted.
+
+#### Removing the protection of a site
+
+There is no button for it yet, it takes two steps on an existing site :
+
+1. Delete the htpasswd file of the site on the server.
+2. Trigger a rendering of its vhost, by opening the *EDIT SITE* form of the site and submitting it unchanged.
+
+> **Do the two steps back to back.** Deleting the file alone does not make the site public : the vhost still points at it, so nginx fails to open it and answers `403 Forbidden` to everybody, including the visitors who know the password. The site stays in that state until its vhost gets rendered again, which the second step does once the backend cron picks the task up.
+
+Nothing else triggers a rendering on a running site, so skipping the second step leaves the site down for good.

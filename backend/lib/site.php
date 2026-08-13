@@ -27,6 +27,12 @@ class Site
     protected String $site_language;
     protected String $site_status = 'DISABLED';
 
+    // HTTP basic authentication credentials submitted with the current task.
+    // Nothing is stored in database : the htpasswd file on the server is the
+    // reference, and empty values mean "change nothing".
+    protected String $site_htpasswd_username = '';
+    protected String $site_htpasswd_hash     = '';
+
     protected String $site_admin_password_reset_url = "";
 
     protected Ansible $ansible;
@@ -73,12 +79,14 @@ class Site
     /**
      * TASK : Create a new site
      *
-     * @param String $name        Site name
-     * @param int    $platform_id The platform id
-     * @param String $domain      The main domain used by the website
-     * @param int    $profile_id  The profile id of the platform to use
-     * @param String $language    The language to use (ex: 'fr', 'en')
-     * @param Array  $aliases     The site domain aliases (server aliases)
+     * @param String      $name              Site name
+     * @param int         $platform_id       The platform id
+     * @param String      $domain            The main domain used by the website
+     * @param int         $profile_id        The profile id of the platform to use
+     * @param String      $language          The language to use (ex: 'fr', 'en')
+     * @param Array       $aliases           The site domain aliases (server aliases)
+     * @param String|null $htpasswd_username The HTTP authentication user name
+     * @param String|null $htpasswd_password The HTTP authentication clear text password
      *
      * @return Site The newly created site
      */
@@ -87,10 +95,15 @@ class Site
         String $domain,
         int $profile_id,
         String $language,
-        array $aliases = []
+        array $aliases = [],
+        ?string $htpasswd_username = null,
+        ?string $htpasswd_password = null
     ) : Site {
 
         $site = new site($name, $platform_id, $domain, $profile_id, $language);
+        // Done before any write, so invalid credentials fail the task without
+        // leaving a half created site behind.
+        $site->set_htpasswd($htpasswd_username, $htpasswd_password);
         $site->insert();
         $site->set_aliases($aliases);
         $site->create();
@@ -162,15 +175,22 @@ class Site
     /**
      * TASK : Edit site
      *
-     * @param Int $site_id the site id
-     * @param String $name the site name
-     * @param Array $aliases the site domain aliases
+     * @param Int         $site_id           the site id
+     * @param String      $name              the site name
+     * @param Array       $aliases           the site domain aliases
+     * @param String|null $htpasswd_username The HTTP authentication user name
+     * @param String|null $htpasswd_password The HTTP authentication clear text password
      *
      * @return Site The site we edited
      */
-    static function task_edit(int $site_id, string $name, array $aliases): Site
-    {
+    static function task_edit(int $site_id,
+        string $name,
+        array $aliases,
+        ?string $htpasswd_username = null,
+        ?string $htpasswd_password = null
+    ): Site {
         $site = Site::init_by_id($site_id);
+        $site->set_htpasswd($htpasswd_username, $htpasswd_password);
         $site->edit($name, $aliases);
 
         return $site;
@@ -288,6 +308,8 @@ class Site
         $this->ansible->add_var("dropfactory_site_language", strtolower($this->site_language));
         $this->ansible->add_var("dropfactory_site_db", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
+        $this->ansible->add_var("dropfactory_site_htpasswd_username", $this->site_htpasswd_username);
+        $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
         $this->ansible->run();
     }
 
@@ -431,6 +453,9 @@ class Site
             "dropfactory_site_vhost",
             "platform_" . $this->site_platform_id . "_site_" . $this->site_id);
 
+        $this->ansible->add_var("dropfactory_site_htpasswd_username", $this->site_htpasswd_username);
+        $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
+
         $this->ansible->run();
     }
 
@@ -498,6 +523,60 @@ class Site
     {
         $this->site_serveraliases = $this->normalize_aliases($aliases);
         $this->insert_aliases($this->site_serveraliases);
+    }
+
+    /**
+     * Set the HTTP basic authentication credentials carried by the task.
+     *
+     * The password is hashed here : only the hash travels to Ansible and
+     * reaches the server. Empty credentials are a no-op, so editing a site
+     * name or its aliases never drops an existing protection.
+     *
+     * @param String|null $htpasswd_username The htpasswd user name
+     * @param String|null $htpasswd_password The clear text password
+     *
+     * @return void
+     */
+    function set_htpasswd(?string $htpasswd_username, ?string $htpasswd_password): void
+    {
+        $username = trim((string) $htpasswd_username);
+        $password = (string) $htpasswd_password;
+
+        if ($username === '' && $password === '') {
+            return;
+        }
+
+        if ($username === '') {
+            throw new InvalidArgumentException(
+                'A user name is required to set the HTTP authentication.'
+            );
+        }
+
+        if ($password === '') {
+            throw new InvalidArgumentException(
+                'A password is required to set the HTTP authentication.'
+            );
+        }
+
+        // A colon or a line break would let the user name forge extra entries
+        // in the htpasswd file.
+        if (preg_match('/^[A-Za-z0-9._@-]{1,64}$/', $username) !== 1) {
+            throw new InvalidArgumentException(
+                'Invalid HTTP authentication user name : only letters, digits'
+                . ' and the ._@- characters are allowed (64 characters max).'
+            );
+        }
+
+        // bcrypt silently ignores everything past the 72nd byte, which would
+        // give a password shorter than the one the user typed.
+        if (strlen($password) > 72) {
+            throw new InvalidArgumentException(
+                'The HTTP authentication password must not exceed 72 bytes.'
+            );
+        }
+
+        $this->site_htpasswd_username = $username;
+        $this->site_htpasswd_hash = password_hash($password, PASSWORD_BCRYPT);
     }
 
     /**

@@ -1,4 +1,7 @@
 ---
+- name: Handle the site HTTP authentication
+  ansible.builtin.include_tasks: htpasswd.yml
+
 - name: Update vhost {{ dropfactory_site_vhost }}
   ansible.builtin.template:
     src: "{{ in_template | lower }}.conf.j2"

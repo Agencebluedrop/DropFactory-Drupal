@@ -9,6 +9,11 @@ server {
 	access_log      /home/{{ dropfactory_site_platform_user }}/log/access.log;
 	error_log       /home/{{ dropfactory_site_platform_user }}/log/error.log;
 	server_name {{ dropfactory_site_domain | join(' ') }};
+{% if dropfactory_site_htpasswd_stat is defined and dropfactory_site_htpasswd_stat.stat.exists %}
+
+	auth_basic "Restricted";
+	auth_basic_user_file {{ dropfactory_site_htpasswd_file }};
+{% endif %}
 
 	root /home/{{ dropfactory_site_platform_user }}/platform/web;
 	index index.htm index.html index.php;
@@ -44,8 +49,11 @@ server {
 	}
 
 	# Allow "Well-Known URIs" as per RFC 5785
+	# The HTTP authentication is turned off here, otherwise it would break the
+	# ACME challenges used to issue the certificates.
 	location ~* ^/.well-known/ {
 		allow all;
+		auth_basic off;
 	}
 
 	# Block access to "hidden" files and directories whose names begin with a

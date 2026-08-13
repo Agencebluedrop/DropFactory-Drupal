@@ -1,3 +1,10 @@
 ---
 in_template: "drupal"
 in_domains: []
+
+# HTTP basic authentication. The htpasswd file living on the server is the
+# reference.
+dropfactory_site_htpasswd_username: ""
+dropfactory_site_htpasswd_hash: ""
+dropfactory_site_htpasswd_dir: "/etc/nginx/htpasswd"
+dropfactory_site_htpasswd_file: "{{ dropfactory_site_htpasswd_dir }}/{{ dropfactory_site_vhost }}"

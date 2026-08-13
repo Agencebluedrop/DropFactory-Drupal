@@ -10,3 +10,8 @@
     path: "/etc/nginx/sites-available/{{ dropfactory_site_vhost }}.conf"
     state: absent
   notify: Reload nginx
+
+- name: Delete the site htpasswd file
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_htpasswd_file }}"
+    state: absent
