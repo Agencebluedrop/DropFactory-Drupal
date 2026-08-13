@@ -28,9 +28,11 @@ class Site
     protected String $site_status = 'DISABLED';
 
     // HTTP basic authentication credentials submitted with the current task.
-    // Nothing is stored in database : the htpasswd file on the server is the
-    // reference, and empty values mean "change nothing".
+    // Empty values mean "change nothing". Only the hash reaches the server,
+    // the clear text password is kept to be stored in database once Ansible
+    // applied it, so the edition form can pre-fill its fields.
     protected String $site_htpasswd_username = '';
+    protected String $site_htpasswd_password = '';
     protected String $site_htpasswd_hash     = '';
 
     protected String $site_admin_password_reset_url = "";
@@ -311,6 +313,10 @@ class Site
         $this->ansible->add_var("dropfactory_site_htpasswd_username", $this->site_htpasswd_username);
         $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
         $this->ansible->run();
+
+        if ($this->ansible->is_okay()) {
+            $this->persist_htpasswd();
+        }
     }
 
     /**
@@ -457,6 +463,10 @@ class Site
         $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
 
         $this->ansible->run();
+
+        if ($this->ansible->is_okay()) {
+            $this->persist_htpasswd();
+        }
     }
 
     /**
@@ -576,7 +586,37 @@ class Site
         }
 
         $this->site_htpasswd_username = $username;
+        $this->site_htpasswd_password = $password;
         $this->site_htpasswd_hash = password_hash($password, PASSWORD_BCRYPT);
+    }
+
+    /**
+     * Store the HTTP authentication credentials in database.
+     *
+     * Only called once Ansible reported a success, so the database describes
+     * what has really been applied on the server. A task that carries no
+     * credential changes nothing here either.
+     *
+     * @return void
+     */
+    private function persist_htpasswd(): void
+    {
+        if ($this->site_htpasswd_username === '') {
+            return;
+        }
+
+        $stmt = DB::$pdo->prepare('
+            UPDATE `Site`
+            SET htpasswd_username = :htpasswd_username,
+                htpasswd_password = :htpasswd_password
+            WHERE id = :id
+        ');
+
+        $stmt->execute([
+            'id' => $this->site_id,
+            'htpasswd_username' => $this->site_htpasswd_username,
+            'htpasswd_password' => $this->site_htpasswd_password,
+        ]);
     }
 
     /**
