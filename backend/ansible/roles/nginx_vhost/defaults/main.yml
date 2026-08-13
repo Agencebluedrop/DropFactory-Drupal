@@ -6,5 +6,8 @@ in_domains: []
 # reference.
 dropfactory_site_htpasswd_username: ""
 dropfactory_site_htpasswd_hash: ""
+# Set by the tasks that submitted both fields empty. The tasks that carry no
+# credential at all leave it false, so they never drop an existing protection.
+dropfactory_site_htpasswd_remove: false
 dropfactory_site_htpasswd_dir: "/etc/nginx/htpasswd"
 dropfactory_site_htpasswd_file: "{{ dropfactory_site_htpasswd_dir }}/{{ dropfactory_site_vhost }}"

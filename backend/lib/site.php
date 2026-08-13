@@ -35,6 +35,11 @@ class Site
     protected String $site_htpasswd_password = '';
     protected String $site_htpasswd_hash     = '';
 
+    // Both fields submitted empty : the protection has to be removed. Told
+    // apart from "no credential at all", which is what the tasks that don't
+    // carry any (enable, disable...) send and which must change nothing.
+    protected Bool $site_htpasswd_remove = false;
+
     protected String $site_admin_password_reset_url = "";
 
     protected Ansible $ansible;
@@ -312,6 +317,7 @@ class Site
         $this->ansible->add_var("dropfactory_site_vhost", 'platform_'.$this->site_platform_id.'_site_'.$this->site_id);
         $this->ansible->add_var("dropfactory_site_htpasswd_username", $this->site_htpasswd_username);
         $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
+        $this->ansible->add_var("dropfactory_site_htpasswd_remove", $this->site_htpasswd_remove ? 'true' : 'false');
         $this->ansible->run();
 
         if ($this->ansible->is_okay()) {
@@ -461,6 +467,7 @@ class Site
 
         $this->ansible->add_var("dropfactory_site_htpasswd_username", $this->site_htpasswd_username);
         $this->ansible->add_var("dropfactory_site_htpasswd_hash", $this->site_htpasswd_hash);
+        $this->ansible->add_var("dropfactory_site_htpasswd_remove", $this->site_htpasswd_remove ? 'true' : 'false');
 
         $this->ansible->run();
 
@@ -539,8 +546,9 @@ class Site
      * Set the HTTP basic authentication credentials carried by the task.
      *
      * The password is hashed here : only the hash travels to Ansible and
-     * reaches the server. Empty credentials are a no-op, so editing a site
-     * name or its aliases never drops an existing protection.
+     * reaches the server. Both fields empty asks for the protection to be
+     * removed : the edition form pre-fills them from database, so clearing
+     * them is a deliberate gesture.
      *
      * @param String|null $htpasswd_username The htpasswd user name
      * @param String|null $htpasswd_password The clear text password
@@ -553,6 +561,8 @@ class Site
         $password = (string) $htpasswd_password;
 
         if ($username === '' && $password === '') {
+            $this->site_htpasswd_remove = true;
+
             return;
         }
 
@@ -601,7 +611,7 @@ class Site
      */
     private function persist_htpasswd(): void
     {
-        if ($this->site_htpasswd_username === '') {
+        if ($this->site_htpasswd_username === '' && !$this->site_htpasswd_remove) {
             return;
         }
 
@@ -614,8 +624,8 @@ class Site
 
         $stmt->execute([
             'id' => $this->site_id,
-            'htpasswd_username' => $this->site_htpasswd_username,
-            'htpasswd_password' => $this->site_htpasswd_password,
+            'htpasswd_username' => $this->site_htpasswd_remove ? null : $this->site_htpasswd_username,
+            'htpasswd_password' => $this->site_htpasswd_remove ? null : $this->site_htpasswd_password,
         ]);
     }
 
