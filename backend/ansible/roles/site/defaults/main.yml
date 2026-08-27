@@ -5,3 +5,7 @@
 # It sits outside of the platform web root, so nginx can't serve it, and
 # outside of the platform git clone, so it survives platform redeployments.
 dropfactory_site_private_path: "/home/{{ dropfactory_site_platform_user }}/private/{{ dropfactory_site_domain[0] }}"
+
+# Runtime mode of the site private directory (owner www-platform_N, group
+# platform_N, setgid). Overridden to 2770 only for the window of site:install.
+dropfactory_site_private_mode: "2750"
