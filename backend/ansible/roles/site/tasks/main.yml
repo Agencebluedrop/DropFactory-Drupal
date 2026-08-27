@@ -1,8 +1,11 @@
 ---
 # before the site:install task, so that the folder exists
 # from the begining of the Drupal site.
+# 2770 so drush site:install (platform_N) can write; passed to 750 after.
 - name: Prepare the site private files directory
   ansible.builtin.include_tasks: private_files.yml
+  vars:
+    dropfactory_site_private_mode: "2770"
 
 - name: Create site
   ansible.builtin.shell:
@@ -10,6 +13,25 @@
     cmd: "umask 027; ~/platform/vendor/bin/drush site:install {{dropfactory_site_profile_name}} --sites-subdir='{{ dropfactory_site_domain[0] }}' --db-url='mysql://{{ dropfactory_site_db }}:{{ dropfactory_site_db_password.stdout }}@{{ dropfactory_site_database_host  }}/{{ dropfactory_site_db }}?module=mysql#drupal-{{ dropfactory_site_id }}_' --locale={{ dropfactory_site_language | default('en') }} --yes"
   become: true
   become_user: "{{ dropfactory_site_platform_user }}"
+
+# Drupal might create a .htaccess file in the private files directory, so restore ownership.
+- name: Restore ownership of private files created during install
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_private_path }}"
+    state: directory
+    owner: "www-{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    recurse: true
+  when: dropfactory_site_domain[0] | length > 0
+
+- name: Restore strict permissions on the private files directory
+  ansible.builtin.file:
+    path: "{{ dropfactory_site_private_path }}"
+    state: directory
+    owner: "www-{{ dropfactory_site_platform_user }}"
+    group: "{{ dropfactory_site_platform_user }}"
+    mode: "{{ dropfactory_site_private_mode }}"
+  when: dropfactory_site_domain[0] | length > 0
 
 #use the ansible core module "include tasks" to include the file
 #register_aliases.yml and execute its tasks in the current playbook.

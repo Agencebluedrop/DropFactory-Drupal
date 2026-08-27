@@ -10,14 +10,15 @@
     group: "{{ dropfactory_site_platform_user }}"
     mode: "0750"
 
-#The directory is owned by the PHP-FPM user, as Drupal is the one writing the
-#private files. The setgid bit makes the created files inherit the platform
-#group, so Drush and the backups can still read them.
+# Owned by PHP-FPM (www-platform_N). Setgid so files inherit the platform
+# group and Drush / backups can still read them. Mode is 2770 at site
+# creation (drush site:install runs as platform_N and must write), then
+# 2750 after install and on site edition.
 - name: Create the site private files directory
   ansible.builtin.file:
     path: "{{ dropfactory_site_private_path }}"
     state: directory
     owner: "www-{{ dropfactory_site_platform_user }}"
     group: "{{ dropfactory_site_platform_user }}"
-    mode: "2750"
+    mode: "{{ dropfactory_site_private_mode }}"
   when: dropfactory_site_domain[0] | length > 0
