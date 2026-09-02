@@ -450,6 +450,9 @@ class FactoryController extends AbstractController
             ]),
         ]);
 
+        $form->get('htpasswd')->get('username')->setData($site->getHtpasswdUsername());
+        $form->get('htpasswd')->get('password')->setData($site->getHtpasswdPassword());
+
         $form->handleRequest($request);
 
         if ($request->isXmlHttpRequest()) {

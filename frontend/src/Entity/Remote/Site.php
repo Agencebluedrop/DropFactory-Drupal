@@ -34,6 +34,12 @@ class Site
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $htpasswd_username = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $htpasswd_password = null;
+
     /**
      * @var Collection<int, Alias>
      */
@@ -119,6 +125,30 @@ class Site
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getHtpasswdUsername(): ?string
+    {
+        return $this->htpasswd_username;
+    }
+
+    public function setHtpasswdUsername(?string $htpasswd_username): static
+    {
+        $this->htpasswd_username = $htpasswd_username;
+
+        return $this;
+    }
+
+    public function getHtpasswdPassword(): ?string
+    {
+        return $this->htpasswd_password;
+    }
+
+    public function setHtpasswdPassword(?string $htpasswd_password): static
+    {
+        $this->htpasswd_password = $htpasswd_password;
 
         return $this;
     }
