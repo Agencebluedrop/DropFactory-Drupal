@@ -28,7 +28,7 @@ class Site
     protected String $site_status = 'DISABLED';
 
     // HTTP basic authentication credentials submitted with the current task.
-    // Empty values mean "change nothing". Only the hash reaches the server,
+    // Empty values mean "remove protection". Only the hash reaches the server,
     // the clear text password is kept to be stored in database once Ansible
     // applied it, so the edition form can pre-fill its fields.
     protected String $site_htpasswd_username = '';
