@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Users" />
+{% endblock %}
+
+{% block body %}
+    <twig:Utils:Section :withGrid="false">
+        <div class="space-y-10">
+            <twig:Atoms:RichText headline="{{ tablesCells|length }} users" headlineTag="h3" />
+
+            <twig:Atoms:Table :tableCells="tablesCells" :tableHeader="tableHeader" :withTasks="false" :withCheckbox="false" />
+        </div>
+    </twig:Utils:Section>
+{% endblock %}

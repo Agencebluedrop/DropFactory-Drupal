@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit user{% endblock %}
+
+{% block hero %}
+    <twig:Molecules:Hero label="Edit user" />
+{% endblock %}
+
+{% block body %}
+    {% set formContentArray = [] %}
+    {% set inputClasses = 'form-control px-8 py-3 bg-white rounded-3xl border-2 border-neutral-100 text-base leading-7 text-secondary-900 w-full' %}
+    {% set labelClasses = 'block text-brand-secondary text-xs uppercase font-bold mb-2' %}
+    {% set errors = 'error-item:text-error error-item:text-xs error-item:uppercase error-item:font-bold [&>ul]:mb-2' %}
+
+    {% set formContent %}
+        <twig:Molecules:FormContainer formTitle="Edit {{ user.email }}">
+            {{ form_errors(userEditForm) }}
+
+            {{ form_start(userEditForm, {
+                attr: { class: 'space-y-6' },
+            }) }}
+
+            {{ form_row(userEditForm.email, {
+                attr: { class: inputClasses },
+                label_attr: { class: labelClasses },
+                row_attr: { class: errors }
+            }) }}
+
+            {{ form_row(userEditForm.plainPassword, {
+                attr: { class: inputClasses },
+                label_attr: { class: labelClasses },
+                row_attr: { class: errors }
+            }) }}
+
+            {{ form_row(userEditForm.roles, {
+                attr: { class: inputClasses },
+                label_attr: { class: labelClasses },
+                row_attr: { class: errors }
+            }) }}
+
+            <twig:Atoms:Button type="submit" label="Save" buttonClasses="w-full" />
+            {{ form_end(userEditForm) }}
+        </twig:Molecules:FormContainer>
+    {% endset %}
+    {% set formContentArray = formContentArray|merge([formContent]) %}
+    <twig:Utils:Section :gridItems="formContentArray" columns="1" columnsWidth="8" />
+{% endblock %}
