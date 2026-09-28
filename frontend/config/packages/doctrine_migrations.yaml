@@ -1,5 +1,5 @@
-doctrine_migrations:
-    migrations_paths:
-        'DoctrineMigrations': '%kernel.project_dir%/migrations'
-    enable_profiler: false
-    em: default
+# doctrine_migrations:
+#     migrations_paths:
+#         'DoctrineMigrations': '%kernel.project_dir%/migrations'
+#     enable_profiler: false
+#     em: default
