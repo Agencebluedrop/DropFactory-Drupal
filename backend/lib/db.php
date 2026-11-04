@@ -20,9 +20,12 @@ class DB
     public static function connect($CONFIG)
     {
         self::$pdo = new PDO(
-            $CONFIG['database']['type'].':host='. $CONFIG['database']['host']. ';dbname='.$CONFIG['database']['database'], 
-            $CONFIG['database']['user'], 
-            $CONFIG['database']['password']
+            $CONFIG['database']['type'].':host='. $CONFIG['database']['host']. ';dbname='.$CONFIG['database']['database'],
+            $CONFIG['database']['user'],
+            $CONFIG['database']['password'],
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]
         );
     }
 }
