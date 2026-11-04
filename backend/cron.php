@@ -15,8 +15,8 @@
  */
 
 /**
- * TODOS : 
- * * Locking system (ie: prevent two cron to be simulteanously running)
+ * TODOS :
+ * * Cap how many cron.php processes run at once
  * * Clean tasks stuck running ?
  */
 
@@ -39,33 +39,16 @@ if ($CONFIG === false) {
 
 DB::connect($CONFIG);
 
-// Fetch all new tasts waiting in the buffer queue
-$q = DB::$pdo->query('SELECT * FROM `TaskBuffer`');
-$waiting_tasks = $q->rowcount();
+$task = Task::claim_next();
 
-if ($waiting_tasks === 0) {
+if ($task === null) {
     echo "No tasks in queue\n";
     echo "Exiting...\n";
     exit(0);
 }
 
-echo "There are : ". $waiting_tasks." waiting to be handled\n";
-
-foreach ($q as $value) {
-    $task = new Task(
-        $value['id'],
-        $value['created_at'],
-        $value['action'],
-        $value['parameters'],
-    );
-
-    // Validate task parameters 
+while ($task !== null) {
     $task->validate();
-    
-    // Transfer the task from table TaskBuffer to table Task
-    $task->insert();
-    $task->remove_from_buffer();
-
-    // Do the task (and update its status)
     $task->do();
+    $task = Task::claim_next();
 }

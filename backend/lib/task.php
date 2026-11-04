@@ -149,16 +149,75 @@ class Task
     }
 
     /**
-     * Remove the task from the TaskBuffer table
+     * Claim one waiting buffer row for this process.
+     *
+     * The copy into Task and the deletion from TaskBuffer commit together.
+     * do() is called by the cron after this method returns, so the row lock
+     * is not held during Ansible. An empty skip list adds no NOT IN clause.
+     *
+     * @param array $skipIds Buffer ids that stay in the queue for a later claim
+     *
+     * @return Task|null The claimed task, or null when the queue has nothing to take
      */
-    function remove_from_buffer() : void
+    static function claim_next(array $skipIds = []): ?Task
     {
-        $query = 'DELETE FROM `TaskBuffer`
-        where id = :id';
+        $pdo = DB::$pdo;
+        $pdo->beginTransaction();
 
-        $stmt = DB::$pdo->prepare($query);
+        try {
+            $sql = 'SELECT `id`, `created_at`, `action`, `parameters`
+                    FROM `TaskBuffer`';
+            $params = [];
 
-        $stmt->execute(['id' => $this->tasks_buffer_id ]);
+            if ($skipIds !== []) {
+                $placeholders = [];
+                foreach (array_values($skipIds) as $index => $id) {
+                    $name = ':skip' . $index;
+                    $placeholders[] = $name;
+                    $params[$name] = (int) $id;
+                }
+                $sql .= ' WHERE `id` NOT IN (' . implode(', ', $placeholders) . ')';
+            }
+
+            $sql .= ' ORDER BY `id` LIMIT 1 FOR UPDATE SKIP LOCKED';
+
+            $select = $pdo->prepare($sql);
+            $select->execute($params);
+            $row = $select->fetch(PDO::FETCH_ASSOC);
+            $select->closeCursor();
+
+            if ($row === false) {
+                $pdo->commit();
+
+                return null;
+            }
+
+            $task = new self(
+                (int) $row['id'],
+                $row['created_at'],
+                $row['action'],
+                $row['parameters']
+            );
+            $task->insert();
+
+            $delete = $pdo->prepare('DELETE FROM `TaskBuffer` WHERE `id` = :id');
+            $delete->execute(['id' => $task->tasks_buffer_id]);
+            if ($delete->rowCount() !== 1) {
+                $pdo->rollBack();
+
+                return null;
+            }
+
+            $pdo->commit();
+
+            return $task;
+        } catch (Throwable $exception) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            throw $exception;
+        }
     }
 
     /**
