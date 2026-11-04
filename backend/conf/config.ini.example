@@ -14,3 +14,10 @@ database = db_name
 ; This is not used and here as an example
 [storage]
 basedir = /path/to/foo
+
+[cron]
+; How many cron.php processes may run at the same time.
+; Each process holds one file, cron.N.lock, under /var/lock/dropfactory.
+; When every slot is taken, the process exits and the next scheduled run tries again.
+; If this key is missing from config.ini, the code uses 3.
+max_parallel_crons = 3
