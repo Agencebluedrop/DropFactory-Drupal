@@ -40,7 +40,7 @@ Requirements :
 > Drupal platforms must have their Composer dependencies installed before sites are created, otherwise commands such as Drush may be unavailable.
 
 > *Note*: 
-> On SSL certificates for HTTPS. In it's curent state, DropFactory does not handle SSL/TLS certificate managemen for the sites created with it.
+> On SSL certificates for HTTPS. In it's curent state, DropFactory does not handle SSL/TLS certificate management for the sites created with it.
 > You'll have to handle it yourself, with a front facing load-balancer that will handle certificate generation/renewal and TLS offloading
 
 
